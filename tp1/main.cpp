@@ -1,9 +1,29 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <vector>
 
 enum GroundType { Grass, HighGrass, Water, Fire, Wall };
+
+inline double get_ground_type_cost(GroundType ground_type) {
+
+  switch (ground_type) {
+  case GroundType::Grass:
+    return 1.0;
+  case GroundType::HighGrass:
+    return 1.5;
+  case GroundType::Water:
+    return 2.5;
+  case GroundType::Fire:
+    return 6.0;
+  case GroundType::Wall:
+    return std::numeric_limits<double>::max();
+  default:
+    break;
+  }
+  return -1;
+}
 
 std::vector<std::vector<GroundType>>
 parse_input_file(const std::string &filename) {
