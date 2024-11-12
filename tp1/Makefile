@@ -6,7 +6,7 @@ build:
 	$(CXX) $(CFLAGS) main.cpp -o pathfinder $(LIBS)
 
 run:
-	./pathfinder mapas/mapa_teste.map Greedy 2 2 2 4 
+	./pathfinder mapas/cidade.map Greedy 2 2 83 98
 
 clean:
 	rm -rf *.o
