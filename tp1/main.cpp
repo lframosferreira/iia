@@ -1,8 +1,19 @@
+#include <algorithm>
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <limits>
+#include <queue>
+#include <utility>
 #include <vector>
+
+#define dbg(x) std::cout << #x << " = " << x << std::endl;
+
+inline bool out_of_bounds(int x, int y, int dx, int dy, int map_width,
+                          int map_height) {
+  return (x + dx < 1) or (x + dx > map_height - 1) or (y + dy < 1) or
+         (y + dy > map_width - 1);
+}
 
 enum GroundType { Grass, HighGrass, Water, Fire, Wall };
 enum SearchMethod { BFS, IDS, UCS, Greedy, Astar, Unkown };
@@ -24,7 +35,6 @@ get_search_method_from_identifier(const std::string &search_method_identifier) {
 }
 
 inline double get_ground_type_cost(const GroundType &ground_type) {
-
   switch (ground_type) {
   case GroundType::Grass:
     return 1.0;
@@ -47,10 +57,10 @@ parse_input_file(const std::string &filename) {
   std::ifstream input_stream(filename);
   int height, width;
   input_stream >> width >> height;
-  std::vector<std::vector<GroundType>> map_(height,
-                                            std::vector<GroundType>(width));
-  for (int i = 0; i < height; i++) {
-    for (int j = 0; j < width; j++) {
+  std::vector<std::vector<GroundType>> map_(height + 1,
+                                            std::vector<GroundType>(width + 1));
+  for (int i = 1; i <= height; i++) {
+    for (int j = 1; j <= width; j++) {
       char c;
       input_stream >> c;
       switch (c) {
@@ -80,7 +90,7 @@ parse_input_file(const std::string &filename) {
 
 typedef struct SearchMethodOutput {
   double cost;
-  std::vector<std::pair<unsigned int, unsigned int>> path;
+  std::vector<std::pair<int, int>> path;
 
   SearchMethodOutput() {
     this->cost = 0.0;
@@ -99,12 +109,65 @@ std::ostream &operator<<(std::ostream &os,
   return os;
 }
 
-SearchMethodOutput
-breadth_first_search(const std::vector<std::vector<GroundType>> &map_,
-                     unsigned int x_i, unsigned int y_i, unsigned int x_f,
-                     unsigned int y_f) {
-  SearchMethodOutput output;
+inline std::vector<std::pair<int, int>>
+get_path(int x_f, int y_f,
+         const std::vector<std::vector<std::pair<int, int>>> &parent) {
+  std::vector<std::pair<int, int>> path;
+  int x = x_f;
+  int y = y_f;
+  while (x != -1 and y != -1) {
+    path.push_back(std::make_pair(x, y));
+    auto &[new_x, new_y] = parent.at(x).at(y);
+    x = new_x;
+    y = new_y;
+  }
+  std::reverse(path.begin(), path.end());
+  return path;
+}
 
+SearchMethodOutput
+breadth_first_search(const std::vector<std::vector<GroundType>> &map_, int x_i,
+                     int y_i, int x_f, int y_f) {
+  SearchMethodOutput output;
+  int map_height = map_.size();
+  int map_width = map_.at(0).size();
+  std::queue<std::tuple<int, int, double, int, int>> states_to_process;
+  std::vector<std::vector<std::pair<int, int>>> parent(
+      map_height, std::vector<std::pair<int, int>>(map_width));
+  GroundType initial_pos_ground_type = map_.at(x_i).at(y_i);
+  states_to_process.push(std::make_tuple(
+      x_i, y_i, get_ground_type_cost(initial_pos_ground_type), -1, -1));
+  std::vector<std::pair<int, int>> moves = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+  std::pair<int, int> not_visited_position_flag = std::make_pair(0, 0);
+  while (!states_to_process.empty()) {
+    auto [x, y, cost, parent_x, parent_y] = states_to_process.front();
+    states_to_process.pop();
+    if (parent.at(x).at(y) != not_visited_position_flag) {
+      continue;
+    }
+    parent.at(x).at(y) = std::make_pair(parent_x, parent_y);
+
+    for (const auto &[dx, dy] : moves) {
+      if (out_of_bounds(x, y, dx, dy, map_width, map_height)) {
+        continue;
+      }
+      if (map_.at(x + dx).at(y + dy) == GroundType::Wall) {
+        continue;
+      }
+      if (parent.at(x + dx).at(y + dy) != not_visited_position_flag) {
+        continue;
+      }
+      if (x + dx == x_f and y + dy == y_f) {
+        output.cost = cost + get_ground_type_cost(map_.at(x + dx).at(y + dy));
+        parent.at(x + dx).at(y + dy) = std::make_pair(x, y);
+        output.path = get_path(x_f, y_f, parent);
+        return output; // early return
+      }
+      states_to_process.push(std::make_tuple(
+          x + dx, y + dy,
+          cost + get_ground_type_cost(map_.at(x + dx).at(y + dy)), x, y));
+    }
+  }
   return output;
 }
 
@@ -119,10 +182,10 @@ int main(int argc, char *argv[]) {
   std::string input_file_path = argv[1];
   SearchMethod search_method = get_search_method_from_identifier(argv[2]);
 
-  unsigned int x_i = std::stoi(argv[3]);
-  unsigned int y_i = std::stoi(argv[4]);
-  unsigned int x_f = std::stoi(argv[5]);
-  unsigned int y_f = std::stoi(argv[6]);
+  int x_i = std::stoi(argv[3]);
+  int y_i = std::stoi(argv[4]);
+  int x_f = std::stoi(argv[5]);
+  int y_f = std::stoi(argv[6]);
 
   std::vector<std::vector<GroundType>> map_ = parse_input_file(input_file_path);
 
