@@ -235,6 +235,79 @@ uniform_cost_search(const std::vector<std::vector<GroundType>> &map_, int x_i,
   return output;
 }
 
+// heuristic => manhattan distance
+SearchMethodOutput greedy(const std::vector<std::vector<GroundType>> &map_,
+                          int x_i, int y_i, int x_f, int y_f) {
+  SearchMethodOutput output;
+  int map_height = map_.size();
+  int map_width = map_.at(0).size();
+  typedef std::tuple<int, int, double, int, int, int>
+      priority_queue_element_type;
+  class Compare {
+  public:
+    bool operator()(const priority_queue_element_type &a,
+                    const priority_queue_element_type &b) {
+      int heuristic_cost_a, heuristic_cost_b;
+      std::tie(std::ignore, std::ignore, std::ignore, std::ignore, std::ignore,
+               heuristic_cost_a) = a;
+      std::tie(std::ignore, std::ignore, std::ignore, std::ignore, std::ignore,
+               heuristic_cost_b) = b;
+      return heuristic_cost_a > heuristic_cost_b;
+    }
+  };
+
+  std::priority_queue<priority_queue_element_type,
+                      std::vector<priority_queue_element_type>, Compare>
+      states_to_process;
+  std::vector<std::vector<std::pair<int, int>>> parent(
+      map_height, std::vector<std::pair<int, int>>(map_width));
+  GroundType initial_pos_ground_type = map_.at(x_i).at(y_i);
+
+  auto manhattan_distance = [x_f, y_f](const int curr_x, const int curr_y) {
+    return abs(x_f - curr_x) + abs(y_f - curr_y);
+  };
+
+  states_to_process.push(
+      std::make_tuple(x_i, y_i, get_ground_type_cost(initial_pos_ground_type),
+                      -1, -1, manhattan_distance(x_i, y_i)));
+  std::vector<std::pair<int, int>> moves = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+  std::pair<int, int> not_visited_position_flag = std::make_pair(0, 0);
+  while (!states_to_process.empty()) {
+    auto [x, y, cost, parent_x, parent_y, heuristic_cost] =
+        states_to_process.top();
+    states_to_process.pop();
+
+    if (parent.at(x).at(y) != not_visited_position_flag) {
+      continue;
+    }
+    parent.at(x).at(y) = std::make_pair(parent_x, parent_y);
+
+    // early return
+    if (x == x_f and y == y_f) {
+      output.cost = cost;
+      output.path = get_path(x_f, y_f, parent);
+      return output;
+    }
+
+    for (const auto &[dx, dy] : moves) {
+      if (out_of_bounds(x, y, dx, dy, map_width, map_height)) {
+        continue;
+      }
+      if (map_.at(x + dx).at(y + dy) == GroundType::Wall) {
+        continue;
+      }
+      if (parent.at(x + dx).at(y + dy) != not_visited_position_flag) {
+        continue;
+      }
+      states_to_process.push(std::make_tuple(
+          x + dx, y + dy,
+          cost + get_ground_type_cost(map_.at(x + dx).at(y + dy)), x, y,
+          manhattan_distance(x + dx, y + dy)));
+    }
+  }
+  return output;
+}
+
 int main(int argc, char *argv[]) {
   if (argc != 7) {
     std::cerr
@@ -265,7 +338,7 @@ int main(int argc, char *argv[]) {
     std::cout << uniform_cost_search(map_, x_i, y_i, x_f, y_f) << std::endl;
     break;
   case SearchMethod::Greedy:
-    std::cout << "Not implemented yet" << std::endl;
+    std::cout << greedy(map_, x_i, y_i, x_f, y_f) << std::endl;
     break;
   case SearchMethod::Astar:
     std::cout << "Not implemented yet" << std::endl;
