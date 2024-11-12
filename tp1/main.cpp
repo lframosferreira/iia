@@ -157,11 +157,75 @@ breadth_first_search(const std::vector<std::vector<GroundType>> &map_, int x_i,
       if (parent.at(x + dx).at(y + dy) != not_visited_position_flag) {
         continue;
       }
+      // early return
       if (x + dx == x_f and y + dy == y_f) {
         output.cost = cost + get_ground_type_cost(map_.at(x + dx).at(y + dy));
         parent.at(x + dx).at(y + dy) = std::make_pair(x, y);
         output.path = get_path(x_f, y_f, parent);
-        return output; // early return
+        return output;
+      }
+      states_to_process.push(std::make_tuple(
+          x + dx, y + dy,
+          cost + get_ground_type_cost(map_.at(x + dx).at(y + dy)), x, y));
+    }
+  }
+  return output;
+}
+
+// dijkstra
+SearchMethodOutput
+uniform_cost_search(const std::vector<std::vector<GroundType>> &map_, int x_i,
+                    int y_i, int x_f, int y_f) {
+  SearchMethodOutput output;
+  int map_height = map_.size();
+  int map_width = map_.at(0).size();
+  typedef std::tuple<int, int, double, int, int> priority_queue_element_type;
+  class Compare {
+  public:
+    bool operator()(const priority_queue_element_type &a,
+                    const priority_queue_element_type &b) {
+      double cost_a, cost_b;
+      std::tie(std::ignore, std::ignore, cost_a, std::ignore, std::ignore) = a;
+      std::tie(std::ignore, std::ignore, cost_b, std::ignore, std::ignore) = b;
+      return cost_a > cost_b;
+    }
+  };
+
+  std::priority_queue<priority_queue_element_type,
+                      std::vector<priority_queue_element_type>, Compare>
+      states_to_process;
+  std::vector<std::vector<std::pair<int, int>>> parent(
+      map_height, std::vector<std::pair<int, int>>(map_width));
+  GroundType initial_pos_ground_type = map_.at(x_i).at(y_i);
+  states_to_process.push(std::make_tuple(
+      x_i, y_i, get_ground_type_cost(initial_pos_ground_type), -1, -1));
+  std::vector<std::pair<int, int>> moves = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+  std::pair<int, int> not_visited_position_flag = std::make_pair(0, 0);
+  while (!states_to_process.empty()) {
+    auto [x, y, cost, parent_x, parent_y] = states_to_process.top();
+    states_to_process.pop();
+
+    if (parent.at(x).at(y) != not_visited_position_flag) {
+      continue;
+    }
+    parent.at(x).at(y) = std::make_pair(parent_x, parent_y);
+
+    // early return
+    if (x == x_f and y == y_f) {
+      output.cost = cost;
+      output.path = get_path(x_f, y_f, parent);
+      return output;
+    }
+
+    for (const auto &[dx, dy] : moves) {
+      if (out_of_bounds(x, y, dx, dy, map_width, map_height)) {
+        continue;
+      }
+      if (map_.at(x + dx).at(y + dy) == GroundType::Wall) {
+        continue;
+      }
+      if (parent.at(x + dx).at(y + dy) != not_visited_position_flag) {
+        continue;
       }
       states_to_process.push(std::make_tuple(
           x + dx, y + dy,
@@ -198,7 +262,7 @@ int main(int argc, char *argv[]) {
     std::cout << "Not implemented yet" << std::endl;
     break;
   case SearchMethod::UCS:
-    std::cout << "Not implemented yet" << std::endl;
+    std::cout << uniform_cost_search(map_, x_i, y_i, x_f, y_f) << std::endl;
     break;
   case SearchMethod::Greedy:
     std::cout << "Not implemented yet" << std::endl;
