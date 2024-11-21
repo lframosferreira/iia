@@ -10,6 +10,10 @@
 
 #define dbg(x) std::cout << #x << " = " << x << std::endl;
 
+// ordem: esq cima dir baixo
+static const std::vector<std::pair<int, int>> moves = {
+    {-1, 0}, {0, 1}, {1, 0}, {0, -1}};
+
 inline bool out_of_bounds(int x, int y, int dx, int dy, int map_width,
                           int map_height) {
   return (x + dx < 1) or (x + dx > map_height - 1) or (y + dy < 1) or
@@ -137,10 +141,7 @@ breadth_first_search(const std::vector<std::vector<GroundType>> &map_, int x_i,
   std::queue<queue_element_type> states_to_process;
   std::vector<std::vector<std::pair<int, int>>> parent(
       map_height, std::vector<std::pair<int, int>>(map_width));
-  GroundType initial_pos_ground_type = map_.at(x_i).at(y_i);
-  states_to_process.push(std::make_tuple(
-      x_i, y_i, get_ground_type_cost(initial_pos_ground_type), -1, -1));
-  std::vector<std::pair<int, int>> moves = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+  states_to_process.push(std::make_tuple(x_i, y_i, 0, -1, -1));
   std::pair<int, int> not_visited_position_flag = std::make_pair(0, 0);
   while (!states_to_process.empty()) {
     auto [x, y, cost, parent_x, parent_y] = states_to_process.front();
@@ -183,21 +184,17 @@ iterative_depth_search(const std::vector<std::vector<GroundType>> &map_,
   int map_width = map_.at(0).size();
   // x y cost parent_x parent_y depth
   typedef std::tuple<int, int, double, int, int, int> stack_element_type;
-  std::vector<std::vector<std::pair<int, int>>> parent(
-      map_height, std::vector<std::pair<int, int>>(map_width));
-  GroundType initial_pos_ground_type = map_.at(x_i).at(y_i);
-  std::vector<std::pair<int, int>> moves = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
   std::pair<int, int> not_visited_position_flag = std::make_pair(0, 0);
-  const int MAX_DEPTH = 5000;
+  const int MAX_DEPTH = map_width * map_height;
   for (int curr_max_allowed_depth = 0; curr_max_allowed_depth < MAX_DEPTH;
        curr_max_allowed_depth++) {
     std::stack<stack_element_type> states_to_process;
-    states_to_process.push(std::make_tuple(
-        x_i, y_i, get_ground_type_cost(initial_pos_ground_type), -1, -1, 0));
-    // reset parents
-    for (auto &inner_vec : parent) {
-      std::fill(inner_vec.begin(), inner_vec.end(), std::make_pair(0, 0));
-    }
+    states_to_process.push(std::make_tuple(x_i, y_i, 0, -1, -1, 0));
+    std::vector<std::vector<std::pair<int, int>>> parent(
+        map_height, std::vector<std::pair<int, int>>(map_width));
+    // for (auto &inner_vec : parent) {
+    //   std::fill(inner_vec.begin(), inner_vec.end(), std::make_pair(0, 0));
+    // }
     while (!states_to_process.empty()) {
       auto [x, y, cost, parent_x, parent_y, depth] = states_to_process.top();
       states_to_process.pop();
@@ -263,10 +260,7 @@ uniform_cost_search(const std::vector<std::vector<GroundType>> &map_, int x_i,
       states_to_process;
   std::vector<std::vector<std::pair<int, int>>> parent(
       map_height, std::vector<std::pair<int, int>>(map_width));
-  GroundType initial_pos_ground_type = map_.at(x_i).at(y_i);
-  states_to_process.push(std::make_tuple(
-      x_i, y_i, get_ground_type_cost(initial_pos_ground_type), -1, -1));
-  std::vector<std::pair<int, int>> moves = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+  states_to_process.push(std::make_tuple(x_i, y_i, 0, -1, -1));
   std::pair<int, int> not_visited_position_flag = std::make_pair(0, 0);
   while (!states_to_process.empty()) {
     auto [x, y, cost, parent_x, parent_y] = states_to_process.top();
@@ -329,16 +323,13 @@ SearchMethodOutput greedy(const std::vector<std::vector<GroundType>> &map_,
       states_to_process;
   std::vector<std::vector<std::pair<int, int>>> parent(
       map_height, std::vector<std::pair<int, int>>(map_width));
-  GroundType initial_pos_ground_type = map_.at(x_i).at(y_i);
 
   auto manhattan_distance = [x_f, y_f](const int curr_x, const int curr_y) {
     return abs(x_f - curr_x) + abs(y_f - curr_y);
   };
 
   states_to_process.push(
-      std::make_tuple(x_i, y_i, get_ground_type_cost(initial_pos_ground_type),
-                      -1, -1, manhattan_distance(x_i, y_i)));
-  std::vector<std::pair<int, int>> moves = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+      std::make_tuple(x_i, y_i, 0, -1, -1, manhattan_distance(x_i, y_i)));
   std::pair<int, int> not_visited_position_flag = std::make_pair(0, 0);
   while (!states_to_process.empty()) {
     auto [x, y, cost, parent_x, parent_y, heuristic_cost] =
@@ -404,16 +395,13 @@ SearchMethodOutput astar(const std::vector<std::vector<GroundType>> &map_,
       states_to_process;
   std::vector<std::vector<std::pair<int, int>>> parent(
       map_height, std::vector<std::pair<int, int>>(map_width));
-  GroundType initial_pos_ground_type = map_.at(x_i).at(y_i);
 
   auto manhattan_distance = [x_f, y_f](const int curr_x, const int curr_y) {
     return abs(x_f - curr_x) + abs(y_f - curr_y);
   };
 
   states_to_process.push(
-      std::make_tuple(x_i, y_i, get_ground_type_cost(initial_pos_ground_type),
-                      -1, -1, manhattan_distance(x_i, y_i)));
-  std::vector<std::pair<int, int>> moves = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+      std::make_tuple(x_i, y_i, 0, -1, -1, manhattan_distance(x_i, y_i)));
   std::pair<int, int> not_visited_position_flag = std::make_pair(0, 0);
   while (!states_to_process.empty()) {
     auto [x, y, cost, parent_x, parent_y, heuristic_cost] =

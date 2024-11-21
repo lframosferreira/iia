@@ -1,8 +1,9 @@
 import sys
+
 import matplotlib.pyplot as plt
 import numpy as np
 
-H, W = 256, 256
+H, W = int(sys.argv[2]) + 1, int(sys.argv[3]) + 1
 
 
 def create_grid(H, W, positions):
