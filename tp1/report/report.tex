@@ -36,10 +36,29 @@ Os testes apresentados na análise de resultados foram feitos em uma máquina co
 \section{Descrição dos algoritmos}
 
 Nesta seção, é feita uma breve descrição dos algoritmos utilizados e suas principais diferenças.
-FAZER ISSO AQUI PRA ESTUDAR
+Para todos eles, consideramos um \textit{branch factor} \(b\) e
+que a solução está no nível \(d\).
 
 \begin{itemize}
 	\item \textit{Breadth First Search (BFS)}
+		A busca em largura é um algoritmo em que, a cada iteração,
+		se expande o nó mais raso ainda não expandido na busca. Em termos informais,
+		primeiro se expande a raiz, depois os sucessores da raiz, depois os sucessores
+		dos sucessores da raiz, e assim se segue. O algoritmo pode ser implementado
+		com uma fila, pois a ideia dele segue um arquitetura de FIFO (\textit{First In First Out}).
+		No algoritmo podemos fazer algo chamado \textit{Early Goal Test}, em que checamos se um nó adicionado na fila
+		já é o nó final antes de processá-lo ao sair da fila. Faz-se isso pois com isso
+		o algoritmo não irá precisar adicionar mais nós à fila e nem processar os que já estão lá se o nó final
+		já estiver pronto para ser processado.
+
+		\begin{itemize}
+			\item \texttt{Completo}
+			\item \texttt{Ótimo}, se e somente se o custo seja uma função
+				não decrescente da profundidade do nó (Por exemplo, na busca de menor caminho em
+				um grafo sem pesos nas arestas.).
+			\item \texttt{Complexidade}: tempo (\(\mathcal{O}(b^d)\)) e espaço (\(\mathcal{O}(b^d)\))
+		\end{itemize}
+
 	\item \textit{Iterative Depth Search (IDS)}
 	\item \textit{Uniform COst Search (UCS)}
 	\item \textit{Greedy}

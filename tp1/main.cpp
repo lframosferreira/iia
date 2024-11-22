@@ -201,10 +201,10 @@ iterative_depth_search(const std::vector<std::vector<GroundType>> &map_,
       if (parent.at(x).at(y) != not_visited_position_flag) {
         continue;
       }
-      parent.at(x).at(y) = std::make_pair(parent_x, parent_y);
 
       // early return
       if (x == x_f and y == y_f) {
+        parent.at(x).at(y) = std::make_pair(parent_x, parent_y);
         output.cost = cost;
         output.path = get_path(x_f, y_f, parent);
         return output;
@@ -225,6 +225,7 @@ iterative_depth_search(const std::vector<std::vector<GroundType>> &map_,
         if (parent.at(x + dx).at(y + dy) != not_visited_position_flag) {
           continue;
         }
+        parent.at(x).at(y) = std::make_pair(parent_x, parent_y);
         states_to_process.push(std::make_tuple(
             x + dx, y + dy,
             cost + get_ground_type_cost(map_.at(x + dx).at(y + dy)), x, y,
