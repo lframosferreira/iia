@@ -60,9 +60,39 @@ que a solução está no nível \(d\).
 		\end{itemize}
 
 	\item \textit{Iterative Depth Search (IDS)}
-	\item \textit{Uniform COst Search (UCS)}
+		A busca com profundidade iterativa é uma junção dos algoritmos
+		BFS e DFS. Nele, aplicamos uma busca em profundidade iterativa, isto é, a cada iteração,
+		aumentamos a profundidade permitida na busca. Nesse sentido,
+		os benefícios da BFS e da DFS são combinado. 
+
+		\begin{itemize}
+			\item \texttt{Completo}.
+		\item \texttt{Ótimo}, considerando custo crescente como no caso da busca em largura.
+		\item \texttt{Complexidade}: tempo \(\mathcal{O}(b^d)\) e espaço
+		\end{itemize}
+
+	\item \textit{Uniform Cost Search (UCS)}
+
+		O algoritmo de busca de custo uniforme é muito semelhante à BFS, mas
+		o próximo nó expandido é na verdade o nó com menor custo até o momento. Para fazer isso,
+		é necessário manter uma ordenação dos custos dos nós, e pra isso
+		podemos utilizar uma fila de prioridades ou um \textit{heap} na
+		implementação.
+
+		\begin{itemize}
+			\item \texttt{Completo}, se e somente se cada passo do algoritmo tem custo positivo (
+				Considerando um grafo com pesos nas arestas, se houver uma aresta com peso negativo, o algoritmo
+				não funcionaria).
+			\item \texttt{Ótimo}, uma vez que seguimos o menor custo
+			\item \texttt{Complexidade}: se \(C^*\) for a solução ótima,
+				o pior caso de tempo e espaço é \(\mathcal{O}(b^{1 + \frac{C^*}{\epsilon}})\).
+		\end{itemize}
+
 	\item \textit{Greedy}
+
 	\item \(\text{A}^*\)
+
+
 \end{itemize}
 
 
