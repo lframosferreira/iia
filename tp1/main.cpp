@@ -96,9 +96,11 @@ parse_input_file(const std::string &filename) {
 typedef struct SearchMethodOutput {
   double cost;
   std::vector<std::pair<int, int>> path;
+  int number_of_expanded_states = 0;
 
   SearchMethodOutput() {
     this->cost = 0.0;
+    this->number_of_expanded_states = 0;
     // I suppose std::vector has a default constructor for empty vectors being
     // used here by the compiler
   }
@@ -110,6 +112,8 @@ std::ostream &operator<<(std::ostream &os,
   for (auto &[x, y] : search_method_output.path) {
     os << "(" << x << "," << y << ")" << " ";
   }
+  // this should be removed later
+  os << search_method_output.number_of_expanded_states;
   os << std::endl;
   return os;
 }
@@ -128,6 +132,21 @@ get_path(int x_f, int y_f,
   }
   std::reverse(path.begin(), path.end());
   return path;
+}
+
+// we use parent here cause the states with parents are the ones who got
+// expanded
+int count_expanded_states(
+    const std::vector<std::vector<std::pair<int, int>>> &parent) {
+  int count = 0;
+  for (const auto &inner_vec : parent) {
+    for (const auto &p : inner_vec) {
+      if (p != std::make_pair(0, 0)) {
+        count++;
+      }
+    }
+  }
+  return count;
 }
 
 SearchMethodOutput
@@ -166,6 +185,7 @@ breadth_first_search(const std::vector<std::vector<GroundType>> &map_, int x_i,
         output.cost = cost + get_ground_type_cost(map_.at(x + dx).at(y + dy));
         parent.at(x + dx).at(y + dy) = std::make_pair(x, y);
         output.path = get_path(x_f, y_f, parent);
+        output.number_of_expanded_states = count_expanded_states(parent);
         return output;
       }
       states_to_process.push(std::make_tuple(
@@ -173,6 +193,7 @@ breadth_first_search(const std::vector<std::vector<GroundType>> &map_, int x_i,
           cost + get_ground_type_cost(map_.at(x + dx).at(y + dy)), x, y));
     }
   }
+  output.number_of_expanded_states = count_expanded_states(parent);
   return output;
 }
 
@@ -186,15 +207,15 @@ iterative_depth_search(const std::vector<std::vector<GroundType>> &map_,
   typedef std::tuple<int, int, double, int, int, int> stack_element_type;
   std::pair<int, int> not_visited_position_flag = std::make_pair(0, 0);
   const int MAX_DEPTH = map_width * map_height;
+  std::vector<std::vector<std::pair<int, int>>> parent(
+      map_height, std::vector<std::pair<int, int>>(map_width));
   for (int curr_max_allowed_depth = 0; curr_max_allowed_depth < MAX_DEPTH;
        curr_max_allowed_depth++) {
     std::stack<stack_element_type> states_to_process;
     states_to_process.push(std::make_tuple(x_i, y_i, 0, -1, -1, 0));
-    std::vector<std::vector<std::pair<int, int>>> parent(
-        map_height, std::vector<std::pair<int, int>>(map_width));
-    // for (auto &inner_vec : parent) {
-    //   std::fill(inner_vec.begin(), inner_vec.end(), std::make_pair(0, 0));
-    // }
+    for (auto &inner_vec : parent) {
+      std::fill(inner_vec.begin(), inner_vec.end(), std::make_pair(0, 0));
+    }
     while (!states_to_process.empty()) {
       auto [x, y, cost, parent_x, parent_y, depth] = states_to_process.top();
       states_to_process.pop();
@@ -207,6 +228,7 @@ iterative_depth_search(const std::vector<std::vector<GroundType>> &map_,
         parent.at(x).at(y) = std::make_pair(parent_x, parent_y);
         output.cost = cost;
         output.path = get_path(x_f, y_f, parent);
+        output.number_of_expanded_states = count_expanded_states(parent);
         return output;
       }
 
@@ -233,6 +255,7 @@ iterative_depth_search(const std::vector<std::vector<GroundType>> &map_,
       }
     }
   }
+  output.number_of_expanded_states = count_expanded_states(parent);
   return output;
 }
 
@@ -276,6 +299,7 @@ uniform_cost_search(const std::vector<std::vector<GroundType>> &map_, int x_i,
     if (x == x_f and y == y_f) {
       output.cost = cost;
       output.path = get_path(x_f, y_f, parent);
+      output.number_of_expanded_states = count_expanded_states(parent);
       return output;
     }
 
@@ -294,6 +318,8 @@ uniform_cost_search(const std::vector<std::vector<GroundType>> &map_, int x_i,
           cost + get_ground_type_cost(map_.at(x + dx).at(y + dy)), x, y));
     }
   }
+  output.number_of_expanded_states = count_expanded_states(parent);
+
   return output;
 }
 
@@ -346,6 +372,7 @@ SearchMethodOutput greedy(const std::vector<std::vector<GroundType>> &map_,
     if (x == x_f and y == y_f) {
       output.cost = cost;
       output.path = get_path(x_f, y_f, parent);
+      output.number_of_expanded_states = count_expanded_states(parent);
       return output;
     }
 
@@ -365,6 +392,7 @@ SearchMethodOutput greedy(const std::vector<std::vector<GroundType>> &map_,
           manhattan_distance(x + dx, y + dy)));
     }
   }
+  output.number_of_expanded_states = count_expanded_states(parent);
   return output;
 }
 
@@ -418,6 +446,7 @@ SearchMethodOutput astar(const std::vector<std::vector<GroundType>> &map_,
     if (x == x_f and y == y_f) {
       output.cost = cost;
       output.path = get_path(x_f, y_f, parent);
+      output.number_of_expanded_states = count_expanded_states(parent);
       return output;
     }
 
@@ -437,6 +466,7 @@ SearchMethodOutput astar(const std::vector<std::vector<GroundType>> &map_,
           manhattan_distance(x + dx, y + dy)));
     }
   }
+  output.number_of_expanded_states = count_expanded_states(parent);
   return output;
 }
 
