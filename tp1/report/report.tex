@@ -139,6 +139,9 @@ as quais foram utilizadas na implementação da lógica dos algoritmos.
 A função \texttt{main} identifica a partir da entrada padrão qual o algoritmo que deve ser utilizado e invoca esse procedimento
 com a entrada correta após fazer a leitura do arquivo de entrada. Mais detalhes podem ser encontrados nos comentários do código no arquivo \textit{main.cpp}.
 
+Os arquivos \textit{plot\_path.py} e \textit{plot\_expanded\_states.py} são arquivos utilitários escritos em \textit{Python} para gerar os gráficos que mostram o caminho encontrado por cada algoritmo
+e os estados expandidos por eles. Por serem apenas arquivos utilitários o chatGPT foi utilizado para que eles fossem criados mais rapidamente, para que assim mais foco pudesse ser dada às análises e à implementação dos algoritmos.
+
 \section{Heurísticas utilizadas}
 
 Nesta seção são apresentadas as heurísticas utilizadas nos algoritmos \textit{Greedy} e \(\text{A}^*\). Em particular, a heurística escolhida para ambos os algoritmos
@@ -146,15 +149,37 @@ foi a distância \textit{Manhattan} entre dois estados/coordenadas, pois é uma 
 Dados duas coordenadas \((x_i, y_i) e (x_f, y_f)\), a distância \textit{Manhattan} entre elas é formalmente expressada como \(|x_i - x_f| + |y_i - y_f|\).
 
 Ela é uma heurística admissível pois o custo indicado por ela é menor ou igual ao custo real para chegar ao estado final. Isso pois o melhor caso possível, isto é, o caminho de menor custo possível
-entre duas coordenadas, nesse problema, seria justamente a distãncia \textit{Manhtann} entre elas. Logo, a heurística é sempre menor ou igual ao custo real.
+entre duas coordenadas, nesse problema, seria justamente a distância \textit{Manhtann} entre elas. Logo, a heurística é sempre menor ou igual ao custo real.
 
 CONSISTENTE?
 
 \section{Resultados}
 
+Para o cálculo dos resultados, uma série de testes foi realizada. Em particular, o arquivo \textit{benchmark.py} é um código em \textit{Python} utilizado para realizar essa bateria de testes.
+Como ambos os mapas a serem testados (Cidade e Floresta) possuem dimensão 256 por 256, os testes realizados seguiram a seguinte lógica para avaliarmos como os algoritmos se comportam conforme o estado final
+se distancia do estado inicial.
+
+\begin{itemize}
+	\item O estado inicial é sempre o estado com coordenada (1, 1)
+	\item O estado final começa a partir do estado com coordenada (2, 2) e iterativamente aumenta com um salto de 4, indo para
+	      (6, 6), (10, 10), etc.
+\end{itemize}
+
+Os resultados para cada caso de esatdo final foram coletados e serão apresentados nessa seção. A escolha do pulo de tamanho 4 foi feita para que os \textit{benchmarks} não demorassem muito para serem executados mas ainda assim
+uma boa quantidade de informação pudesse ser coletada. Caso o estado final seja uma parede (isto é, um local que não se pode passar) apenas o ignoramos. De modo geral, isso acontece pouco e não impacta na análise.
+
+\subsection{Custo dos caminhos encontrados}
+
+O primeiro resultado que se mostra importante na comparação de algoritmos de busca é o costo dos caminhos encontrados. Os gráficos abaixo mostram a evolução dos custos dos caminhos para ambos os mapas disponibilizados,
+conforme o estado final se distancia do inicial.
+
+\subsection{Caminho encontrado}
+
 \subsection{Número de estados expandidos}
 
 \subsection{Tempo de execução}
+
+Em relação ao tempo de execução, os resultados encontrados indicam exatamente o que se esperava dos algoritmos.
 
 \section{Discussão dos resultados}
 

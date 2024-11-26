@@ -64,56 +64,66 @@ def random_benchmark() -> None:
 def iterative_benchmark() -> None:
     x_i, y_i = 1, 1
     JUMP: int = 4
-    for kind in ["time", "state"]:
-        for algorithm in ALGORITHMS:
-            # if algorithm == "IDS":
-            #     continue
-            print(algorithm)
-            times: list[float] = []
-            states: list[int] = []
-            for k in range(2, H + 1, JUMP):
-                start: float = time.perf_counter()
-                x_f, y_f = k, k
-                if (x_f, y_f) not in non_wall_coordinates:
-                    times.append(0)
-                    states.append(0)
-                    continue
-                output: str = subprocess.run(
-                    [
-                        "./pathfinder",
-                        input_file,
-                        algorithm,
-                        str(x_i),
-                        str(y_i),
-                        str(x_f),
-                        str(y_f),
-                    ],
-                    capture_output=True,
-                    text=True,
-                ).stdout
-                total_time: float = time.perf_counter() - start
-                number_of_expanded_states: int = int(output.split(" ")[-1])
-                times.append(total_time)
-                states.append(number_of_expanded_states)
-            if kind == "time":
-                plt.plot(list(range(2, H + 1, JUMP)), times, label=algorithm)
-            else:
-                plt.plot(list(range(2, H + 1, JUMP)), states, label=algorithm)
-        plt.legend()
-        plt.ylabel(
-            "Tempo de execução (s)"
-            if kind == "time"
-            else "Número de estados expandidos"
-        )
-        plt.xlabel("Diagonal")
-        map: str = input_file.split(".")[0].split("/")[1]
-        plt.title(
-            f"Comparação entre tempo por algoritmo: {map} "
-            if kind == "time"
-            else f"Comparação entre número de estados expandidos por algoritmo: {map}"
-        )
-        plt.savefig(f"{map}_{kind}_benchmark.png")
-        plt.clf()
+    for algorithm in ALGORITHMS:
+        # if algorithm == "IDS":
+        #     continue
+        print(algorithm)
+        times: list[float] = []
+        states: list[int] = []
+        costs: list[float] = []
+        for k in range(2, H + 1, JUMP):
+            start: float = time.perf_counter()
+            x_f, y_f = k, k
+            if (x_f, y_f) not in non_wall_coordinates:
+                times.append(0)
+                states.append(0)
+                costs.append(0)
+                continue
+            output: str = subprocess.run(
+                [
+                    "./pathfinder",
+                    input_file,
+                    algorithm,
+                    str(x_i),
+                    str(y_i),
+                    str(x_f),
+                    str(y_f),
+                ],
+                capture_output=True,
+                text=True,
+            ).stdout
+            total_time: float = time.perf_counter() - start
+            number_of_expanded_states: int = int(output.split(" ")[-1])
+            cost: float = float(output.split(" ")[0])
+            times.append(total_time)
+            states.append(number_of_expanded_states)
+            costs.append(cost)
+    for kind in ["time", "state", "cost"]:
+        if kind == "time":
+            plt.plot(list(range(2, H + 1, JUMP)), times, label=algorithm)
+        elif kind == "state":
+            plt.plot(list(range(2, H + 1, JUMP)), states, label=algorithm)
+        else:
+            plt.plot(list(range(2, H + 1, JUMP)), costs, label=algorithm)
+    plt.legend()
+    plt.ylabel(
+        "Tempo de execução (s)"
+        if kind == "time"
+        else "Número de estados expandidos"
+        if kind == "state"
+        else "Custo do caminho encontrado"
+    )
+    plt.xlabel("Diagonal")
+    map: str = input_file.split(".")[0].split("/")[1]
+    plt.title(
+        f"Comparação entre tempo por algoritmo: {map} "
+        if kind == "time"
+        else f"Comparação entre número de estados expandidos por algoritmo: {map}"
+        if kind == "state"
+        else f"Comparação entre custo dos caminhos encontrados: {map}"
+    )
+    plt.savefig(f"{map}_{kind}_benchmark.png")
+    plt.clf()
 
 
 iterative_benchmark()

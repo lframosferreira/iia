@@ -146,6 +146,22 @@ int count_expanded_states(
       }
     }
   }
+
+  std::ofstream outFile("output.txt");
+  if (!outFile) {
+    std::cerr << "Failed to open file for writing!" << std::endl;
+    return 1;
+  }
+
+  for (const auto &row : parent) {
+    for (const auto &pair : row) {
+      outFile << "(" << pair.first << ", " << pair.second << ") ";
+    }
+    outFile << "\n";
+  }
+
+  outFile.close();
+
   return count;
 }
 
@@ -512,5 +528,6 @@ int main(int argc, char *argv[]) {
   default:
     break;
   }
+
   exit(EXIT_SUCCESS);
 }
