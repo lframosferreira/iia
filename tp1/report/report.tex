@@ -189,10 +189,8 @@ conforme o estado final se distancia do inicial.
 	\caption{Comparação entre custos dos caminhos - floresta}
 \end{figure}
 
-
 Pode-se notar algumas coisas interessantes. Primeiramente, notamos que o custo da UCS e do \(\text{A}^*\) são iguais. Isso acontece pois ambos algoritmos são ótimos, ou seja, sempre encontram o menor caminho possível.
-É importante notar também como os algoritmos guloso e a BFS apresentam custos similares, enquanto a IDS é, de longe,
-o algoritmo que encontra o pior custo.
+É importante notar também como os algoritmos guloso e a BFS apresentam custos similares, enquanto a IDS é, de longe, o algoritmo que encontra o pior custo.
 
 \subsection{Caminho encontrado}
 
@@ -200,41 +198,44 @@ O caminho encontrado é uma forma interessante de se analisar como cada algoritm
 (1, 1) e o estado final (256, 256). Em particular, mostramos os caminhos encontrados por cada algoritmo no mapa \texttt{cidade}.
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=1.0\textwidth]{../images/paths/BFS.png}
-	\caption{BFS}
-\end{figure}
-
-\begin{figure}[h]
 		\centering
-		\subfloat[first]{\includegraphics[width=.48\linewidth]{../images/paths/UCS.png}}
-		\subfloat[second]{\includegraphics[width=.48\linewidth]{../images/paths/Astar.png}}
-		\caption{djskdzjaskl}
+		\subfloat[UCS]{\includegraphics[width=.48\linewidth]{../images/paths/UCS.png}}
+		\subfloat[\(\text{A}^*\)]{\includegraphics[width=.48\linewidth]{../images/paths/Astar.png}}
 \end{figure}
 
 \begin{figure}[H]
-	\centering
-	\includegraphics[width=1.0\textwidth]{../images/paths/IDS.png}
-	\caption{IDS}
+		\centering
+		\subfloat[Greedy]{\includegraphics[width=.33\linewidth]{../images/paths/Greedy.png}}
+		\subfloat[IDS]{\includegraphics[width=.33\linewidth]{../images/paths/IDS.png}}
+		\subfloat[BFS]{\includegraphics[width=.33\linewidth]{../images/paths/BFS.png}}
 \end{figure}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=1.0\textwidth]{../images/paths/Greedy.png}
-	\caption{Greedy}
-\end{figure}
-
-
-aq colocar em duas colunas algms imagens
 
 \subsection{Número de estados expandidos}
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../images/cidade_state_benchmark.png}
+	\caption{Comparação de número de estados expandidos - cidade}
+\end{figure}
+
 \subsection{Tempo de execução}
 
-Em relação ao tempo de execução, os resultados encontrados indicam exatamente o que se esperava dos algoritmos.
+Em relação ao tempo de execução, os resultados encontrados indicam exatamente o que se esperava dos algoritmos. A IDS é, de longe, a que mais demora. Isso ocorre devido à nautureza do algoritmo,
+que repete iterativamente buscas em profundidade conforme aumenta a profundidade máxima utilizada. 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../images/cidade_time_benchmark.png}
+	\caption{Comparação de tempo - cidade}
+\end{figure}
+
+Para tornar a comparação entre os algoritmos mais fácil, temos também um gráfico sem o tempo de execução da IDS. Os algoritmos UCS e \(\text{A}^*\) possuem tempos de execução semelhantes,
+embora o \(\text{A}^*\) seja mais rápido, devido ao uso de uma heurística para guiar o agente mais rapidamente em direção ao estado final. 
+
 
 \section{Discussão dos resultados}
 
-blabla
+A implementação dos algoritmos assim como os resultados encontrados ajudaram a compreender mlehor como cada um dos algoritmos de busca funcionam,
+asism como seus pontos fracos e fortes.
 
 \end{document}
