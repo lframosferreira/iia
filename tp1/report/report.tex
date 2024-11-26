@@ -1,4 +1,6 @@
 \documentclass{article}
+\usepackage{multicol}
+\usepackage{subcaption}
 
 \usepackage{amsmath}
 \usepackage{float}
@@ -203,11 +205,19 @@ O caminho encontrado é uma forma interessante de se analisar como cada algoritm
 	\caption{BFS}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}
+\begin{subfigure}[H]
 	\centering
 	\includegraphics[width=1.0\textwidth]{../images/paths/UCS.png}
 	\caption{UCS}
-\end{figure}
+\end{subfigure}
+
+\begin{subfigure}[H]
+	\centering
+	\includegraphics[width=1.0\textwidth]{../images/paths/Astar.png}
+	\caption{Astar}
+\end{subfigure}
+\end{fgure}
 
 \begin{figure}[H]
 	\centering
@@ -221,11 +231,6 @@ O caminho encontrado é uma forma interessante de se analisar como cada algoritm
 	\caption{Greedy}
 \end{figure}
 
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=1.0\textwidth]{../images/paths/Astar.png}
-	\caption{Astar}
-\end{figure}
 
 aq colocar em duas colunas algms imagens
 
