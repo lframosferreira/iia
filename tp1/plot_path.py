@@ -30,7 +30,7 @@ def create_grid(H, W, positions):
         which="both", bottom=False, left=False, labelbottom=False, labelleft=False
     )
 
-    plt.show()
+    plt.savefig(f"images/paths/{sys.argv[4]}")
 
 
 with open(sys.argv[1], "r") as f:

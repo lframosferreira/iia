@@ -156,7 +156,7 @@ CONSISTENTE?
 \section{Resultados}
 
 Para o cálculo dos resultados, uma série de testes foi realizada. Em particular, o arquivo \textit{benchmark.py} é um código em \textit{Python} utilizado para realizar essa bateria de testes.
-Como ambos os mapas a serem testados (Cidade e Floresta) possuem dimensão 256 por 256, os testes realizados seguiram a seguinte lógica para avaliarmos como os algoritmos se comportam conforme o estado final
+Como o mapa \texttt{cidade} possui dimensão 256 por 256, os testes realizados seguiram a seguinte lógica para avaliarmos como os algoritmos se comportam conforme o estado final
 se distancia do estado inicial.
 
 \begin{itemize}
@@ -165,15 +165,49 @@ se distancia do estado inicial.
 	      (6, 6), (10, 10), etc.
 \end{itemize}
 
-Os resultados para cada caso de esatdo final foram coletados e serão apresentados nessa seção. A escolha do pulo de tamanho 4 foi feita para que os \textit{benchmarks} não demorassem muito para serem executados mas ainda assim
+Os resultados para cada caso de estado final foram coletados e serão apresentados nessa seção. A escolha do pulo de tamanho 4 foi feita para que os \textit{benchmarks} não demorassem muito para serem executados mas ainda assim
 uma boa quantidade de informação pudesse ser coletada. Caso o estado final seja uma parede (isto é, um local que não se pode passar) apenas o ignoramos. De modo geral, isso acontece pouco e não impacta na análise.
+
+O mapa \texttt{floresta}, por sua vez, possui uma grande quantidade de paredes, portanto sua análise foi feita de forma menos dinâmica. Para tal, alguns estados longe da origem foram escolhidos na mão.
 
 \subsection{Custo dos caminhos encontrados}
 
 O primeiro resultado que se mostra importante na comparação de algoritmos de busca é o costo dos caminhos encontrados. Os gráficos abaixo mostram a evolução dos custos dos caminhos para ambos os mapas disponibilizados,
 conforme o estado final se distancia do inicial.
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../images/cidade_cost_benchmark.png}
+	\caption{Comparação entre custos dos caminhos - cidade}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../images/floresta_cost_benchmark.png}
+	\caption{Comparação entre custos dos caminhos - floresta}
+\end{figure}
+
+
+Pode-se notar algumas coisas interessantes. Primeiramente, notamos que o custo da UCS e do \(\text{A}^*\) são iguais. Isso acontece pois ambos algoritmos são ótimos, ou seja, sempre encontram o menor caminho possível.
+É importante notar também como os algoritmos guloso e a BFS apresentam custos similares, enquanto a IDS é, de longe,
+o algoritmo que encontra o pior custo.
+
 \subsection{Caminho encontrado}
+
+O caminho encontrado é uma forma interessante de se analisar como cada algoritmo se comporta. Para a análise que será feita aqui, optou-se por imprimir o caminho encontrado por cada algoritmo entre o estado inicial
+(1, 1) e o estado final (256, 256). Em particular, mostramos os caminhos encontrados por cada algoritmo no mapa \texttt{cidade}.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.0\textwidth]{../images/paths/BFS.png}
+	\caption{BFS}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=1.0\textwidth]{../images/paths/UCS.png}
+	\caption{UCS}
+\end{figure}
 
 \subsection{Número de estados expandidos}
 

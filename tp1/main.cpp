@@ -113,7 +113,7 @@ std::ostream &operator<<(std::ostream &os,
     os << "(" << x << "," << y << ")" << " ";
   }
   // this should be removed later
-  os << search_method_output.number_of_expanded_states;
+  // os << search_method_output.number_of_expanded_states;
   os << std::endl;
   return os;
 }
