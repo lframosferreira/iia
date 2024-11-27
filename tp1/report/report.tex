@@ -44,6 +44,7 @@ que a solução está no nível \(d\) e \(m\) como a profundidade máxima da ár
 
 \begin{itemize}
 	\item \textit{Breadth First Search (BFS)}
+
 	      A busca em largura é um algoritmo em que, a cada iteração,
 	      se expande o nó mais raso ainda não expandido na busca. Em termos informais,
 	      primeiro se expande a raiz, depois os sucessores da raiz, depois os sucessores
@@ -59,10 +60,11 @@ que a solução está no nível \(d\) e \(m\) como a profundidade máxima da ár
 		      \item \texttt{Ótimo}, se e somente se o custo seja uma função
 		            não decrescente da profundidade do nó (Por exemplo, na busca de menor caminho em
 		            um grafo sem pesos nas arestas.).
-		      \item \texttt{Complexidade}: tempo (\(\mathcal{O}(b^d)\)) e espaço (\(\mathcal{O}(b^d)\))
+		      \item \texttt{Complexidade}: tempo \(\mathcal{O}(b^d)\) e espaço \(\mathcal{O}(b^d)\)
 	      \end{itemize}
 
 	\item \textit{Iterative Depth Search (IDS)}
+
 	      A busca com profundidade iterativa é uma junção dos algoritmos
 	      BFS e DFS. Nele, aplicamos uma busca em profundidade iterativa, isto é, a cada iteração,
 	      aumentamos a profundidade permitida na busca. Nesse sentido,
@@ -136,13 +138,14 @@ pelo agente.
 
 Conforme especificado na descrição dos algoritmos, cada um deles requer uma estrutura de dados específica para ser implementado, como no caso da busca em largura, que pode
 ser implementada utilizando uma fila. Desse modo, a biblioteca padrão da linguagem C++ foi utilizada, pois ela contêm implementações eficientes e já prontas dessas estruturas,
-as quais foram utilizadas na implementação da lógica dos algoritmos.
+as quais foram utilizadas na implementação da lógica dos algoritmos. Alguns exemplos de estruturas de dados utilizadas são pilha, fila, fila de prioridades e vetor.
 
 A função \texttt{main} identifica a partir da entrada padrão qual o algoritmo que deve ser utilizado e invoca esse procedimento
 com a entrada correta após fazer a leitura do arquivo de entrada. Mais detalhes podem ser encontrados nos comentários do código no arquivo \textit{main.cpp}.
 
 Os arquivos \textit{plot\_path.py} e \textit{plot\_expanded\_states.py} são arquivos utilitários escritos em \textit{Python} para gerar os gráficos que mostram o caminho encontrado por cada algoritmo
-e os estados expandidos por eles. Por serem apenas arquivos utilitários o chatGPT foi utilizado para que eles fossem criados mais rapidamente, para que assim mais foco pudesse ser dada às análises e à implementação dos algoritmos.
+e os estados expandidos por eles. Por serem apenas arquivos utilitários o código utilizado foi copiado de fórums online como \textit{GeeksForGeeks} e \textit{StackOverflow},
+para que eles fossem criados mais rapidamente, para que assim mais foco pudesse ser dada às análises de resultados e à implementação dos algoritmos.
 
 \section{Heurísticas utilizadas}
 
@@ -152,8 +155,6 @@ Dados duas coordenadas \((x_i, y_i) e (x_f, y_f)\), a distância \textit{Manhatt
 
 Ela é uma heurística admissível pois o custo indicado por ela é menor ou igual ao custo real para chegar ao estado final. Isso pois o melhor caso possível, isto é, o caminho de menor custo possível
 entre duas coordenadas, nesse problema, seria justamente a distância \textit{Manhtann} entre elas. Logo, a heurística é sempre menor ou igual ao custo real.
-
-CONSISTENTE?
 
 \section{Resultados}
 
@@ -170,23 +171,17 @@ se distancia do estado inicial.
 Os resultados para cada caso de estado final foram coletados e serão apresentados nessa seção. A escolha do pulo de tamanho 4 foi feita para que os \textit{benchmarks} não demorassem muito para serem executados mas ainda assim
 uma boa quantidade de informação pudesse ser coletada. Caso o estado final seja uma parede (isto é, um local que não se pode passar) apenas o ignoramos. De modo geral, isso acontece pouco e não impacta na análise.
 
-O mapa \texttt{floresta}, por sua vez, possui uma grande quantidade de paredes, portanto sua análise foi feita de forma menos dinâmica. Para tal, alguns estados longe da origem foram escolhidos na mão.
+% O mapa \texttt{floresta}, por sua vez, possui uma grande quantidade de paredes, portanto sua análise foi feita de forma menos dinâmica. Para tal, alguns estados longe da origem foram escolhidos na mão.
 
 \subsection{Custo dos caminhos encontrados}
 
-O primeiro resultado que se mostra importante na comparação de algoritmos de busca é o costo dos caminhos encontrados. Os gráficos abaixo mostram a evolução dos custos dos caminhos para ambos os mapas disponibilizados,
+O primeiro resultado que se mostra importante na comparação de algoritmos de busca é o custo dos caminhos encontrados. Os gráficos abaixo mostram a evolução dos custos dos caminhos para ambos os mapas disponibilizados,
 conforme o estado final se distancia do inicial.
 
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=0.8\textwidth]{../images/cidade_cost_benchmark.png}
 	\caption{Comparação entre custos dos caminhos - cidade}
-\end{figure}
-
-\begin{figure}[H]
-	\centering
-	\includegraphics[width=0.8\textwidth]{../images/floresta_cost_benchmark.png}
-	\caption{Comparação entre custos dos caminhos - floresta}
 \end{figure}
 
 Pode-se notar algumas coisas interessantes. Primeiramente, notamos que o custo da UCS e do \(\text{A}^*\) são iguais. Isso acontece pois ambos algoritmos são ótimos, ou seja, sempre encontram o menor caminho possível.
@@ -198,17 +193,21 @@ O caminho encontrado é uma forma interessante de se analisar como cada algoritm
 (1, 1) e o estado final (256, 256). Em particular, mostramos os caminhos encontrados por cada algoritmo no mapa \texttt{cidade}.
 
 \begin{figure}[H]
-		\centering
-		\subfloat[UCS]{\includegraphics[width=.48\linewidth]{../images/paths/UCS.png}}
-		\subfloat[\(\text{A}^*\)]{\includegraphics[width=.48\linewidth]{../images/paths/Astar.png}}
+	\centering
+	\subfloat[UCS]{\includegraphics[width=.48\linewidth]{../images/paths/UCS.png}}
+	\subfloat[\(\text{A}^*\)]{\includegraphics[width=.48\linewidth]{../images/paths/Astar.png}}
 \end{figure}
 
 \begin{figure}[H]
-		\centering
-		\subfloat[Greedy]{\includegraphics[width=.33\linewidth]{../images/paths/Greedy.png}}
-		\subfloat[IDS]{\includegraphics[width=.33\linewidth]{../images/paths/IDS.png}}
-		\subfloat[BFS]{\includegraphics[width=.33\linewidth]{../images/paths/BFS.png}}
+	\centering
+	\subfloat[Greedy]{\includegraphics[width=.33\linewidth]{../images/paths/Greedy.png}}
+	\subfloat[IDS]{\includegraphics[width=.33\linewidth]{../images/paths/IDS.png}}
+	\subfloat[BFS]{\includegraphics[width=.33\linewidth]{../images/paths/BFS.png}}
 \end{figure}
+
+Primeiramente, nota-se que o caminho encontrado do UCS e do \(\text{A}^*\) são iguais, o que está correto, pois o \(\text{A}^*\) é basicamente idêntico ao UCS, mas com o uso de uma heurística
+para guiar o agente mais rapidamente em direção ao estado final, diminuindo o número de estados expandidos. O algoritmo guloso e a BFS também encontraram o mesmo caminho, mas isso foi uma coincidência dessa instãncia de análise.
+A IDS, por sua vez, encontrou um caminho diferente dos outros, naturalmente apresentando um caminho que seria encontrado por uma busca em profundidade.
 
 \subsection{Número de estados expandidos}
 
@@ -218,10 +217,16 @@ O caminho encontrado é uma forma interessante de se analisar como cada algoritm
 	\caption{Comparação de número de estados expandidos - cidade}
 \end{figure}
 
+Em relação ao número de estados expandidos, podemos ver claramente a diferença entre os algoritmos. A BFS e a UCS expandem uma grande quantidade de estados. Isso vem naturalmente da natureza exploratória de ambos
+os algoritmos. É curioso enxergar como a curva do algoritmo BFS é suave. Isso ocorre devido ao fato do algoritmo não se guiar de maneira alguma em direção ao estado final, e apenas explora em largura o espaço de busca.
+O algoritmo \(\text{A}^*\), por sua vez, se aproveita do uso de heurísticas para otimizar a busca feita pelo UCS, e por isso o número de estados expandidos para ele é menor que a do UCS. No entanto, mesmo assim, muitos estados
+ainda são expandidos, quando comparamos com o algoritmo guloso. O guloso não encontra a resposta ótima, mas como o agente segue um caminho gulosamente que diminui a distância \textit{Manhattan} até o estado final, pouquíssimos
+estados são expandidos, o que é uma grande vantagem do algoritmo. A IDS, por fim, também expande poucos estados, devido à natureza do uso de uma busca em profundidade.
+
 \subsection{Tempo de execução}
 
 Em relação ao tempo de execução, os resultados encontrados indicam exatamente o que se esperava dos algoritmos. A IDS é, de longe, a que mais demora. Isso ocorre devido à nautureza do algoritmo,
-que repete iterativamente buscas em profundidade conforme aumenta a profundidade máxima utilizada. 
+que repete iterativamente buscas em profundidade conforme aumenta a profundidade máxima utilizada.
 
 \begin{figure}[H]
 	\centering
@@ -229,13 +234,23 @@ que repete iterativamente buscas em profundidade conforme aumenta a profundidade
 	\caption{Comparação de tempo - cidade}
 \end{figure}
 
-Para tornar a comparação entre os algoritmos mais fácil, temos também um gráfico sem o tempo de execução da IDS. Os algoritmos UCS e \(\text{A}^*\) possuem tempos de execução semelhantes,
-embora o \(\text{A}^*\) seja mais rápido, devido ao uso de uma heurística para guiar o agente mais rapidamente em direção ao estado final. 
+Para tornar a comparação entre os algoritmos mais fácil, temos também um gráfico sem o tempo de execução da IDS.
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.8\textwidth]{../images/cidade_time_NOIDS_benchmark.png}
+	\caption{Comparação de tempo - cidade (sem IDS)}
+\end{figure}
 
-\section{Discussão dos resultados}
+Os algoritmos UCS e \(\text{A}^*\) possuem tempos de execução semelhantes,
+embora o \(\text{A}^*\) seja mais rápido, devido ao uso de uma heurística para guiar o agente mais rapidamente em direção ao estado final. A BFS é um pouco mais lenta que a busca gulosa, uma vez que não se baseia em heurística nenhuma
+para se guirar e explora os estados em largura. A busca gulosa é a mais rápida, naturalmente, pois ela explora poucos estados e se guia pela heurística da distância \textit{Manhattan} em direção ao estado final, abrindo mão
+do custo total final.
 
-A implementação dos algoritmos assim como os resultados encontrados ajudaram a compreender mlehor como cada um dos algoritmos de busca funcionam,
-asism como seus pontos fracos e fortes.
+\section{Conclusão}
+
+A implementação dos algoritmos assim como os resultados encontrados ajudaram a compreender melhor como cada um dos algoritmos de busca funcionam,
+asism como seus pontos fracos e fortes. De maneira geral, o algoritmo \(\text{A}^*\) aparenta ser o melhor dentre todos eles para resolver o problema em questão, pois retorna o resultado ótimo, executa rapidamente,
+e heuristicamente é capaz de diminuir o número de estados expandidos. Em contrapartida, o algoritmo IDS parece de longe o pior, sendo disparadamente o que mais demora pra executar.
 
 \end{document}

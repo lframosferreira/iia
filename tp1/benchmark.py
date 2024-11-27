@@ -37,11 +37,10 @@ def random_benchmark() -> None:
         x_f, y_f = random.choice(non_wall_coordinates[150:])
         for algorithm in ALGORITHMS:
             start: float = time.perf_counter()
-            print(x_i, y_i, x_f, y_f)
             output: str = subprocess.run(
                 [
                     "./pathfinder",
-                    "mapas/cidade.map",
+                    "mapas/floresta.map",
                     algorithm,
                     str(x_i),
                     str(y_i),
@@ -64,10 +63,11 @@ def random_benchmark() -> None:
 def iterative_benchmark() -> None:
     x_i, y_i = 1, 1
     JUMP: int = 4
-    for kind in ["time", "state", "cost"]:
+    # for kind in ["time", "state", "cost"]:
+    for kind in ["time"]:
         for algorithm in ALGORITHMS:
-            # if algorithm == "IDS":
-            #     continue
+            if algorithm == "IDS":
+                continue
             print(algorithm)
             times: list[float] = []
             states: list[int] = []
@@ -105,6 +105,68 @@ def iterative_benchmark() -> None:
                 plt.plot(list(range(2, H + 1, JUMP)), states, label=algorithm)
             else:
                 plt.plot(list(range(2, H + 1, JUMP)), costs, label=algorithm)
+        plt.legend()
+        plt.ylabel(
+            "Tempo de execução (s)"
+            if kind == "time"
+            else "Número de estados expandidos"
+            if kind == "state"
+            else "Custo do caminho encontrado"
+        )
+        plt.xlabel("Diagonal")
+        map: str = input_file.split(".")[0].split("/")[1]
+        plt.title(
+            f"Comparação entre tempo por algoritmo: {map} "
+            if kind == "time"
+            else f"Comparação entre número de estados expandidos por algoritmo: {map}"
+            if kind == "state"
+            else f"Comparação entre custo dos caminhos encontrados: {map}"
+        )
+        plt.savefig(f"{map}_{kind}_NOIDS_benchmark.png")
+        plt.clf()
+
+
+def iterative_benchmark_forest() -> None:
+    x_i, y_i = 1, 1
+    JUMP: int = 4
+    for kind in ["time", "state", "cost"]:
+        for algorithm in ALGORITHMS:
+            # if algorithm == "IDS":
+            #     continue
+            print(algorithm)
+            times: list[float] = []
+            states: list[int] = []
+            costs: list[float] = []
+            for k in range(2, H + 1, JUMP):
+                start: float = time.perf_counter()
+                x_f, y_f = k, k
+                if (x_f, y_f) not in non_wall_coordinates:
+                    continue
+                output: str = subprocess.run(
+                    [
+                        "./pathfinder",
+                        input_file,
+                        algorithm,
+                        str(x_i),
+                        str(y_i),
+                        str(x_f),
+                        str(y_f),
+                    ],
+                    capture_output=True,
+                    text=True,
+                ).stdout
+                total_time: float = time.perf_counter() - start
+                number_of_expanded_states: int = int(output.split(" ")[-1])
+                cost: float = float(output.split(" ")[0])
+                times.append(total_time)
+                states.append(number_of_expanded_states)
+                costs.append(cost)
+            if kind == "time":
+                plt.plot(times, label=algorithm)
+            elif kind == "state":
+                plt.plot(states, label=algorithm)
+            else:
+                plt.plot(costs, label=algorithm)
         plt.legend()
         plt.ylabel(
             "Tempo de execução (s)"
