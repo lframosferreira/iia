@@ -16,9 +16,14 @@
     `make clean`
 
 - Como executar
+
     `./pathfinder [Caminho para arquivo de entrada] [Algoritmo] x_i y_i x_f y_f`
 
 ## Bibliotecas utilizadas
 
 - No código principal em C++, apenas a biblioteca padrão foi utilizada
 - Nos códigos auxiliares em Python, as bibliotecas utilizadas estão disponíveis no arquivo `requirements.txt`
+
+## Documentação
+
+A documentação do projeto está contida no arquivo `report.pdf` dentro da pasta `report`
