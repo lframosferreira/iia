@@ -5,7 +5,7 @@
 - g++
 - make
 
-## Como executar
+## Como utilizar
 
 - Compila o código e cria o executável `pathfinder`
 
@@ -14,6 +14,9 @@
 - Limpa os arquivos de objeto criados e os executáveis
 
     `make clean`
+
+- Como executar
+    `./pathfinder [Caminho para arquivo de entrada] [Algoritmo] x_i y_i x_f y_f`
 
 ## Bibliotecas utilizadas
 

@@ -10,19 +10,25 @@
 
 #define dbg(x) std::cout << #x << " = " << x << std::endl;
 
-// ordem: esq cima dir baixo
+// Vetor com os possíveis movimentos do agente durante a busca
 static const std::vector<std::pair<int, int>> moves = {
     {-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
+// Função auxiliar para checar se uma coordenada estará dentro dos limites do
+// mapa
 inline bool out_of_bounds(int x, int y, int dx, int dy, int map_width,
                           int map_height) {
   return (x + dx < 1) or (x + dx > map_height - 1) or (y + dy < 1) or
          (y + dy > map_width - 1);
 }
 
+// Enumeração do tipo de solo
 enum GroundType { Grass, HighGrass, Water, Fire, Wall };
+
+// Enumeralção do tipo de algoritmo de busca
 enum SearchMethod { BFS, IDS, UCS, Greedy, Astar, Unkown };
 
+// Função auxiliar que obtêm o tipo de algoritmo de busca a partir de uma string
 inline SearchMethod
 get_search_method_from_identifier(const std::string &search_method_identifier) {
   if (search_method_identifier == "BFS") {
@@ -39,6 +45,7 @@ get_search_method_from_identifier(const std::string &search_method_identifier) {
   return SearchMethod::Unkown;
 }
 
+// Função auxiliar para obter o custo do tipo de solo
 inline double get_ground_type_cost(const GroundType &ground_type) {
   switch (ground_type) {
   case GroundType::Grass:
@@ -57,6 +64,8 @@ inline double get_ground_type_cost(const GroundType &ground_type) {
   return -1.0;
 }
 
+// Função que faz a leitura da entrada. Retorna uma matriz de tipos de solo que
+// representa o mapa
 std::vector<std::vector<GroundType>>
 parse_input_file(const std::string &filename) {
   std::ifstream input_stream(filename);
@@ -93,6 +102,7 @@ parse_input_file(const std::string &filename) {
   return map_;
 }
 
+// Estrutura que representa a saída dos métodos de busca
 typedef struct SearchMethodOutput {
   double cost;
   std::vector<std::pair<int, int>> path;
@@ -101,8 +111,6 @@ typedef struct SearchMethodOutput {
   SearchMethodOutput() {
     this->cost = 0.0;
     this->number_of_expanded_states = 0;
-    // I suppose std::vector has a default constructor for empty vectors being
-    // used here by the compiler
   }
 } SearchMethodOutput;
 
@@ -110,7 +118,7 @@ std::ostream &operator<<(std::ostream &os,
                          const SearchMethodOutput &search_method_output) {
   os << search_method_output.cost << " ";
   for (auto &[x, y] : search_method_output.path) {
-    os << "(" << x << "," << y << ")" << " ";
+    os << "(" << x << ", " << y << ")" << " ";
   }
   // this should be removed later
   // os << search_method_output.number_of_expanded_states;
@@ -118,6 +126,8 @@ std::ostream &operator<<(std::ostream &os,
   return os;
 }
 
+// Função auxiliar para calcular o custo de um caminho encontrado por um
+// algoritmo de busca
 inline std::vector<std::pair<int, int>>
 get_path(int x_f, int y_f,
          const std::vector<std::vector<std::pair<int, int>>> &parent) {
@@ -134,8 +144,8 @@ get_path(int x_f, int y_f,
   return path;
 }
 
-// we use parent here cause the states with parents are the ones who got
-// expanded
+// Função auxiliar para calcular o número de estados expandidos durante a
+// execução de um algoritmo de busca
 int count_expanded_states(
     const std::vector<std::vector<std::pair<int, int>>> &parent) {
   int count = 0;
