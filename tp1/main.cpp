@@ -118,7 +118,7 @@ std::ostream &operator<<(std::ostream &os,
                          const SearchMethodOutput &search_method_output) {
   os << search_method_output.cost << " ";
   for (auto &[x, y] : search_method_output.path) {
-    os << "(" << x << ", " << y << ")" << " ";
+    os << "(" << y - 1 << "," << x - 1 << ")" << " ";
   }
   // this should be removed later
   // os << search_method_output.number_of_expanded_states;
@@ -507,10 +507,13 @@ int main(int argc, char *argv[]) {
   std::string input_file_path = argv[1];
   SearchMethod search_method = get_search_method_from_identifier(argv[2]);
 
-  int x_i = std::stoi(argv[3]);
-  int y_i = std::stoi(argv[4]);
-  int x_f = std::stoi(argv[5]);
-  int y_f = std::stoi(argv[6]);
+  int x_i = std::stoi(argv[3]) + 1;
+  int y_i = std::stoi(argv[4]) + 1;
+  int x_f = std::stoi(argv[5]) + 1;
+  int y_f = std::stoi(argv[6]) + 1;
+
+  std::swap(x_i, y_i);
+  std::swap(x_f, y_f);
 
   std::vector<std::vector<GroundType>> map_ = parse_input_file(input_file_path);
 
