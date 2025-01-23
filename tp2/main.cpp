@@ -5,6 +5,7 @@
 #include <iostream>
 #include <limits>
 #include <map>
+#include <random>
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -24,12 +25,13 @@ static const std::vector<std::pair<int, int>> moves = {
 // mapa
 inline bool out_of_bounds(int x, int y, int dx, int dy, int map_width,
                           int map_height) {
-  return x + dx < 0 or x + dx >= map_width or y + dy < 0 or
-         y + dy >= map_height;
+  return x + dx < 0 or x + dx >= map_height or y + dy < 0 or
+         y + dy >= map_width;
 }
 
 enum GroundType { Grass, HighGrass, Water, Fire, Objective, Wall };
-enum Action { Left, Right, Down, Up };
+enum Action { Left = 0, Right = 1, Down = 2, Up = 3 };
+std::string v[4] = {"left", "right", "down", "up"};
 
 inline char ground_type_to_char(const GroundType &ground_type) {
   char ret;
@@ -105,8 +107,11 @@ parse_input_file(const std::string &filename) {
   weights.resize(height);
   for (auto &e : weights) {
     e.resize(width);
-    for (auto &e2 : e)
-      e2.resize(4, 0.0);
+    for (auto &e2 : e) {
+      e2.resize(4);
+      for (auto &e3 : e2)
+        e3 = 0.2;
+    }
   }
 
   for (int i = 0; i < height; i++) {
@@ -141,15 +146,15 @@ parse_input_file(const std::string &filename) {
   return map_;
 }
 
-inline Action get_action_from_move(const int &dx, const int &dy) {
+inline Action get_action_from_move(const int dx, const int dy) {
   if (dx == -1)
-    return Action::Left;
+    return Action::Up;
   if (dx == 1)
-    return Action::Right;
-  if (dy == 1)
     return Action::Down;
   if (dy == -1)
-    return Action::Up;
+    return Action::Left;
+  if (dy == 1)
+    return Action::Right;
   std::cerr << "Unknown action from move\n";
   exit(EXIT_FAILURE);
 }
@@ -165,10 +170,10 @@ inline NextStateConfig get_next_state_config(const uint64_t x,
                                              const uint64_t y) {
   long double curr_max = std::numeric_limits<long double>::min();
   Action best_action = Action::Right;
-  int64_t bx = 1, by = 0;
+  int64_t bx = 0, by = 1;
   for (const auto &[dx, dy] : moves) {
     Action action = get_action_from_move(dx, dy);
-    if (out_of_bounds(x, y, dx, dy, map_.at(0).size(), map_.size()))
+    if (out_of_bounds(x, y, dx, dy, map_.size(), map_.at(0).size()))
       continue;
     if (weights[x + dx][y + dy][action] > curr_max) {
       curr_max = weights[x + dx][y + dy][action];
@@ -177,15 +182,8 @@ inline NextStateConfig get_next_state_config(const uint64_t x,
       by = y + dy;
     }
   }
-  return {curr_max, best_action, bx, by};
-}
-
-inline std::pair<long double, std::pair<int, int>>
-get_reward_and_next_state(const uint64_t x, const uint64_t y,
-                          const Action action) {
-  const auto [dx, dy] = moves[action];
-  return {base_ground_type_rewards.at(map_.at(x + dx).at(y + dy)),
-          {x + dx, y + dy}};
+  long double reward = base_ground_type_rewards.at(map_.at(bx).at(by));
+  return {reward, best_action, bx, by};
 }
 
 void standard(const uint64_t xi, const uint64_t yi,
@@ -194,12 +192,16 @@ void standard(const uint64_t xi, const uint64_t yi,
   uint64_t sx = xi;
   uint64_t sy = yi;
   for (auto i = 0; i < number_of_steps; i++) {
+    dbg(sx);
+    dbg(sy);
     auto [reward, best_action, newx, newy] = get_next_state_config(sx, sy);
+    dbg(v[best_action]);
     auto [ignorar1, best_action_new, ignorar2, ignorar3] =
-        get_next_state_config(sx, sy);
+        get_next_state_config(newx, newy);
     weights[sx][sy][best_action] +=
-        LEARNING_RATE * (reward + DISCOUNT_RATE * weights[newx][newx][newy] -
-                         weights[sx][sy][best_action]);
+        LEARNING_RATE *
+        (reward + DISCOUNT_RATE * weights[newx][newy][best_action_new] -
+         weights[sx][sy][best_action]);
 
     sx = newx;
     sy = newy;
