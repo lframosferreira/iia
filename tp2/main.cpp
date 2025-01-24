@@ -14,12 +14,13 @@
 #define LEARNING_RATE 0.1
 #define DISCOUNT_RATE 0.9
 #define EPSILON 0.1
+#define NEG_LD_INF -1 * std::numeric_limits<long double>::infinity()
 
 const void print(const std::string &txt) { std::cout << txt << std::endl; }
 
 // Vetor com os possíveis movimentos do agente durante a busca
 static const std::vector<std::pair<int, int>> moves = {
-    {-1, 0}, {1, 0}, {0, 1}, {0, -1}};
+    {0, -1}, {0, 1}, {1, 0}, {-1, 0}};
 
 // Função auxiliar para checar se uma coordenada estará dentro dos limites do
 // mapa
@@ -66,22 +67,16 @@ inline char ground_type_to_char(const GroundType &ground_type) {
 }
 
 static const std::map<GroundType, long double> base_ground_type_rewards{
-    {GroundType::Grass, -0.1},
-    {GroundType::HighGrass, -0.3},
-    {GroundType::Water, -1.0},
-    {GroundType::Fire, -10.0},
-    {GroundType::Objective, 10.0},
-    {GroundType::Wall, std::numeric_limits<long double>::min()},
+    {GroundType::Grass, -0.1},     {GroundType::HighGrass, -0.3},
+    {GroundType::Water, -1.0},     {GroundType::Fire, -10.0},
+    {GroundType::Objective, 10.0}, {GroundType::Wall, NEG_LD_INF},
 
 };
 
 static const std::map<GroundType, long double> positive_ground_type_rewards{
-    {GroundType::Grass, 3.0},
-    {GroundType::HighGrass, 1.5},
-    {GroundType::Water, 1.0},
-    {GroundType::Fire, 0.0},
-    {GroundType::Objective, 10.0},
-    {GroundType::Wall, std::numeric_limits<long double>::min()},
+    {GroundType::Grass, 3.0},      {GroundType::HighGrass, 1.5},
+    {GroundType::Water, 1.0},      {GroundType::Fire, 0.0},
+    {GroundType::Objective, 10.0}, {GroundType::Wall, NEG_LD_INF},
 };
 
 static std::vector<std::vector<GroundType>> map_;
@@ -98,6 +93,8 @@ void print_map() {
 
 std::vector<std::vector<GroundType>>
 parse_input_file(const std::string &filename) {
+  std::uniform_real_distribution<double> unif(0, 1);
+  std::default_random_engine re;
   std::ifstream input_stream(filename);
   int height, width;
   input_stream >> width >> height;
@@ -110,7 +107,7 @@ parse_input_file(const std::string &filename) {
     for (auto &e2 : e) {
       e2.resize(4);
       for (auto &e3 : e2)
-        e3 = 0.2;
+        e3 = unif(re);
     }
   }
 
@@ -168,21 +165,44 @@ typedef struct {
 
 inline NextStateConfig get_next_state_config(const uint64_t x,
                                              const uint64_t y) {
-  long double curr_max = std::numeric_limits<long double>::min();
+  long double curr_max = weights.at(x).at(y).at(Action::Right);
   Action best_action = Action::Right;
-  int64_t bx = 0, by = 1;
+  int64_t bx = x, by = y == map_.at(0).size() - 1 ? y : y + 1;
+  long double reward = y == map_.at(0).size() - 1
+                           ? NEG_LD_INF
+                           : base_ground_type_rewards.at(map_.at(x).at(y + 1));
   for (const auto &[dx, dy] : moves) {
     Action action = get_action_from_move(dx, dy);
-    if (out_of_bounds(x, y, dx, dy, map_.size(), map_.at(0).size()))
+    if (action == Action::Right)
       continue;
-    if (weights[x + dx][y + dy][action] > curr_max) {
-      curr_max = weights[x + dx][y + dy][action];
-      best_action = action;
-      bx = x + dx;
-      by = y + dy;
+    if (out_of_bounds(x, y, dx, dy, map_.at(0).size(), map_.size())) {
+      if (weights[x][y][action] > curr_max) {
+        curr_max = weights[x][y][action];
+        best_action = action;
+        bx = x;
+        by = y;
+        reward = NEG_LD_INF;
+      }
+
+    } else {
+
+      if (weights[x][y][action] > curr_max) {
+        curr_max = weights[x][y][action];
+        best_action = action;
+        if (map_.at(x + dx).at(y + dy) == GroundType::Wall) {
+          bx = x;
+          by = y;
+          reward = NEG_LD_INF;
+        }
+
+      } else {
+        bx = x + dx;
+        by = y + dy;
+        reward = base_ground_type_rewards.at(map_.at(bx).at(by));
+      }
     }
   }
-  long double reward = base_ground_type_rewards.at(map_.at(bx).at(by));
+
   return {reward, best_action, bx, by};
 }
 
@@ -191,20 +211,65 @@ void standard(const uint64_t xi, const uint64_t yi,
 
   uint64_t sx = xi;
   uint64_t sy = yi;
+  std::uniform_real_distribution<double> unif(0, 1);
+  std::default_random_engine re;
   for (auto i = 0; i < number_of_steps; i++) {
-    dbg(sx);
-    dbg(sy);
-    auto [reward, best_action, newx, newy] = get_next_state_config(sx, sy);
-    dbg(v[best_action]);
+
+    long double reward;
+    Action best_action;
+    uint64_t newx, newy;
+    auto rn = unif(re);
+    if (rn < EPSILON) {
+      auto r = rand() % 4;
+      best_action = (Action)r;
+      auto [dx, dy] = moves[r];
+      if (out_of_bounds(sx, sy, dx, dy, map_.at(0).size(), map_.size())) {
+        reward = NEG_LD_INF;
+        newx = sx, newy = sy;
+      } else if (map_.at(sx + dx).at(sy + dy) == GroundType::Wall) {
+        reward = NEG_LD_INF;
+        newx = sx, newy = sy;
+      } else {
+        reward = base_ground_type_rewards.at(map_.at(sx + dx).at(sy + dy));
+        newx = sx + dx;
+        newy = sy + dy;
+      }
+    } else {
+
+      auto res = get_next_state_config(sx, sy);
+      reward = res.reward;
+      best_action = res.action;
+      newx = res.x;
+      newy = res.y;
+    }
     auto [ignorar1, best_action_new, ignorar2, ignorar3] =
         get_next_state_config(newx, newy);
-    weights[sx][sy][best_action] +=
-        LEARNING_RATE *
-        (reward + DISCOUNT_RATE * weights[newx][newy][best_action_new] -
-         weights[sx][sy][best_action]);
+
+    if (reward == NEG_LD_INF) {
+      weights[sx][sy][best_action] = NEG_LD_INF;
+    } else if (weights[sx][sy][best_action] == NEG_LD_INF) {
+    } else {
+      weights[sx][sy][best_action] +=
+          LEARNING_RATE *
+          (reward + DISCOUNT_RATE * weights[newx][newy][best_action_new] -
+           weights[sx][sy][best_action]);
+    }
 
     sx = newx;
     sy = newy;
+  }
+}
+
+void print_w() {
+
+  for (uint64_t i = 0; i < map_.size(); i++) {
+    for (uint64_t j = 0; j < map_.at(0).size(); j++) {
+      for (uint64_t k = 0; k < 4; k++) {
+        std::cout << weights[i][j][k] << ",";
+      }
+      std::cout << " ";
+    }
+    std::cout << std::endl;
   }
 }
 
@@ -266,6 +331,7 @@ int main(int argc, char **argv) {
   }
 
   print_policy();
+  print_w();
 
   exit(EXIT_SUCCESS);
 }
