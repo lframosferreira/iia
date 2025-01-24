@@ -151,6 +151,8 @@ para encontrar o melhor caminho para o objetivo. Em particular, a variação \te
 
 \subsection{Mapa labirinto (\textit{Maze})}
 
+O mapa \textit{Maze} está exposto abaixo.
+
 \[
 	\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|}
 		\hline
@@ -168,102 +170,117 @@ para encontrar o melhor caminho para o objetivo. Em particular, a variação \te
 \vspace{10pt}
 
 
-% Tabela 1
-\centering \small \textbf{STANDARD}
-\[
-	\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|}
-		\hline
-		x                   & @ & x      & @      & x      & @        & x      & @ & x & @ & \cellcolor{green!20}v & @ \\ \hline
-		v                   & < & <      & <      & <      & <        & <      & < & < & < & <                     & @ \\ \hline
-		v                   & x & @      & @      & @      & @        & @      & @ & @ & @ & \hat{}                & @ \\ \hline
-		v                   & x & @      & <      & <      & >        & <      & > & < & > & \hat{}                & @ \\ \hline
-		v                   & x & @      & >      & @      & @        & @      & @ & @ & @ & @                     & @ \\ \hline
-		v                   & x & @      & \hat{} & <      & <        & \hat{} & v & < & > & >                     & x \\ \hline
-		v                   & x & @      & @      & @      & @        & @      & @ & @ & @ & >                     & @ \\ \hline
-		\cellcolor{red!20}O & v & \hat{} & >      & \hat{} & \hat{} < & v      & > & > & @                             \\ \hline
-	\end{array}
-\]
+\begin{center}
+	\small \textbf{STANDARD}
+	\[
+		\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|}
+			\hline
+			x                   & @ & x      & @      & x      & @      & x      & @ & x & @ & \cellcolor{green!20}v & @ \\ \hline
+			v                   & < & <      & <      & <      & <      & <      & < & < & < & <                     & @ \\ \hline
+			v                   & x & @      & @      & @      & @      & @      & @ & @ & @ & \hat{}                & @ \\ \hline
+			v                   & x & @      & <      & <      & >      & <      & > & < & > & \hat{}                & @ \\ \hline
+			v                   & x & @      & >      & @      & @      & @      & @ & @ & @ & @                     & @ \\ \hline
+			v                   & x & @      & \hat{} & <      & <      & \hat{} & v & < & > & >                     & x \\ \hline
+			v                   & x & @      & @      & @      & @      & @      & @ & @ & @ & >                     & @ \\ \hline
+			\cellcolor{red!20}O & v & \hat{} & >      & \hat{} & \hat{} & v      & < & v & > & >                     & @ \\ \hline
+		\end{array}
+	\]
+\end{center}
 
 
-% Tabela 2
-\centering \small \textbf{POSITIVE}
+\small \textbf{POSITIVE}
 \[
 	\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|}
 		\hline
 		x                   & @      & x & @      & x      & @ & x      & @      & x      & @ & \cellcolor{green!20} v & @ \\ \hline
 		v                   & <      & < & <      & <      & < & <      & <      & >      & < & <                      & @ \\ \hline
-		\hat{}              & x      & @ & @      & @      & @ & @      & @      & @      & @ & \hat{}                 & @ \\ \hline
-		\hat{}              & x      & @ & v      & \hat{} & v & v      & \hat{} & \hat{} & < & \hat{}                 & @ \\ \hline
-		\hat{}              & x      & @ & \hat{} & @      & @ & @      & @      & @      & @ & @                      & @ \\ \hline
-		\hat{}              & x      & @ & v      & >      & < & \hat{} & >      & \hat{} & v & \hat{}                 & x \\ \hline
+		v                   & x      & @ & @      & @      & @ & @      & @      & @      & @ & \hat{}                 & @ \\ \hline
+		v                   & x      & @ & v      & \hat{} & v & v      & \hat{} & \hat{} & < & \hat{}                 & @ \\ \hline
+		v                   & x      & @ & \hat{} & @      & @ & @      & @      & @      & @ & @                      & @ \\ \hline
+		v                   & x      & @ & v      & >      & < & \hat{} & >      & \hat{} & v & \hat{}                 & x \\ \hline
 		\hat{}              & x      & @ & @      & @      & @ & @      & @      & @      & @ & v                      & @ \\ \hline
 		\cellcolor{red!20}O & \hat{} & < & v      & v      & > & v      & \hat{} & v      & < & v                      & @ \\ \hline
 	\end{array}
 \]
 
-
-\centering \small \textbf{STOCHASTIC}
+\small \textbf{STOCHASTIC}
 \[
 	\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|}
 		\hline
-		x & @ & x & @ & x & @ & x & @ & x & @ & v & @
-		> & < & < & > & ^ & < & ^ & > & ^ & < & < & @
-		^ & x & @ & @ & @ & @ & @ & @ & @ & @ & ^ & @
-		> & x & @ & v & < & < & < & v & > & > & ^ & @
-		^ & x & @ & v & @ & @ & @ & @ & @ & @ & @ & @
-		> & x & @ & > & > & > & > & > & > & > & > & x
-		^ & x & @ & @ & @ & @ & @ & @ & @ & @ & ^ & @
-		O & < & < & < & < & < & < & < & < & > & ^ & @
+		x                   & @ & x & @ & x      & @ & x      & @ & x      & @ & \cellcolor{green!20}v & @ \\ \hline
+		v                   & < & < & > & \hat{} & < & \hat{} & > & \hat{} & < & <                     & @ \\ \hline
+		v                   & x & @ & @ & @      & @ & @      & @ & @      & @ & \hat{}                & @ \\ \hline
+		>                   & x & @ & v & <      & < & <      & v & >      & > & \hat{}                & @ \\ \hline
+		v                   & x & @ & v & @      & @ & @      & @ & @      & @ & @                     & @ \\ \hline
+		v                   & x & @ & > & >      & > & >      & > & >      & > & >                     & x \\ \hline
+		>                   & x & @ & @ & @      & @ & @      & @ & @      & @ & \hat{}                & @ \\ \hline
+		\cellcolor{red!20}O & < & < & < & <      & < & <      & < & <      & > & \hat{}                & @ \\ \hline
 	\end{array}
 \]
 
-\begin{table}[h]
-	\centering
-	\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
-		\hline
-		x & @ & x & @      & x      & @ & x      & @ & x      & @      & v \\ \hline
-		v & < & < & <      & <      & < & <      & @ & <      & @      &   \\ \hline
-		v & x & @ & @      & @      & @ & \hat{} & @ & ^      & @      &   \\ \hline
-		v & x & @ & <      & <      & > & <      & > & \hat{} & v      & ^ \\ \hline
-		v & x & @ & >      & @      & @ & @      & @ & @      & \hat{} &   \\ \hline
-		v & x & @ & \hat{} & <      & < & ^      & v & <      & >      & x \\ \hline
-		v & x & @ & @      & @      & @ & >      & @ & ^      & \hat{} &   \\ \hline
-		O & v & ^ & >      & \hat{} & ^ & v      & < & v      & >      & @ \\ \hline
-	\end{tabular}
-	\caption{Primeira tabela}
-\end{table}
+Podemos notar nesse mapa maior que, mais uma vez, a variação \textbf{STANDARD} apresentou uma política melhor que a dos demais. No entanto, podemos ver que a performance das outras duas deixou a desejar. Para um número de episódios igual a 30000, a variação
+\textbf{STOCHASTIC} não conseguiu encontrar uma política "perfeita" que acha o melhor caminho em direção ao objetivo. Em muitos estados, a melhor ação a se tomar calculada ao final do algoritmo não aparenta ser de fato a melhor. A variação
+\textbf{POSITIVE} é ainda pior, as vezes achando caminhos opostos ao ótimo.
 
-\begin{table}[h]
-	\centering
-	\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
-		\hline
-		x      & @ & x & @      & x      & @ & x      & @      & x      & @      & v     \\ \hline
-		v      & < & < & <      & <      & < & \hat{} & <      & <      & @      &       \\ \hline
-		\hat{} & x & @ & @      & @      & v & \hat{} & v      & v      & \hat{} & < & @ \\ \hline
-		\hat{} & x & @ & \hat{} & @      & @ & @      & @      & @      & \hat{} &       \\ \hline
-		\hat{} & x & @ & v      & <      & ^ & >      & \hat{} & ^      & x      &       \\ \hline
-		\hat{} & x & @ & >      & \hat{} & > & v      & \hat{} & ^      & v      & v     \\ \hline
-		\hat{} & x & @ & <      & <      & @ & x      & \hat{} & v      & ^      & v     \\ \hline
-		O      & ^ & < & v      & >      & v & v      & v      & \hat{} & \hat{} & ^     \\ \hline
-	\end{tabular}
-	\caption{Segunda tabela}
-\end{table}
+Vale a pena citar que, assim como no mapa teste, a variação \textbf{POSITIVE} demorou muito, e o número de episódios teve que ser diminuído
+para obtermos uma resposta rápidamente.
 
-\begin{table}[h]
-	\centering
-	\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+\subsection{Mapa escolhas (\textit{Choices})}
+
+O mapa \textit{choices} está exposto abaixo.
+
+\begin{center}
+	\[
+		\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|}
+			\hline
+			@ & . & . & . & . & . & . & . & . & . & @ \\ \hline
+			@ & + & @ & . & x & @ & x & . & @ & ; & @ \\ \hline
+			@ & + & @ & . & @ & @ & x & . & @ & ; & @ \\ \hline
+			@ & + & @ & . & x & @ & x & . & @ & ; & @ \\ \hline
+			@ & + & . & . & @ & @ & x & . & . & ; & @ \\ \hline
+			@ & + & @ & . & x & @ & x & . & @ & ; & @ \\ \hline
+			@ & + & @ & . & @ & @ & x & . & @ & ; & @ \\ \hline
+			@ & + & . & . & . & O & . & . & . & ; & @ \\ \hline
+		\end{array}
+	\]
+\end{center}
+
+
+\vspace{10pt}
+
+
+\begin{center}
+	\small \textbf{STANDARD}
+	\[
+		\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|}
+			\hline
+			@ & > & > & > & > & \cellcolor{red!20}> & > & v & < & < & @ \\ \hline
+			@ & ^ & @ & ^ & x & @ & x & v & @ & ^ & @ \\ \hline
+			@ & ^ & @ & v & @ & @ & x & v & @ & ^ & @ \\ \hline
+			@ & ^ & @ & v & x & @ & x & v & @ & ^ & @ \\ \hline
+			@ & > & > & ^ & @ & @ & x & v & < & < & @ \\ \hline
+			@ & < & @ & v & x & @ & x & v & @ & ^ & @ \\ \hline
+			@ & > & @ & ^ & @ & @ & x & v & @ & ^ & @ \\ \hline
+			@ & v & > & ^ & < & \cellcolor{red!20}O & < & < & < & < & @ \\ \hline
+		\end{array}
+	\]
+\end{center}
+
+
+\small \textbf{POSITIVE}
+\[
+	\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|}
 		\hline
-		x      & @ & x      & @      & x      & @ & x      & @      & x      & @      & v     \\ \hline
-		\hat{} & < & >      & <      & ^      & < & >      & ^      & \hat{} & ^      & <     \\ \hline
-		\hat{} & x & @      & @      & @      & @ & v      & \hat{} & v      & <      & < & ^ \\ \hline
-		x      & @ & v      & \hat{} & v      & < & <      & ^      & v      & \hat{} & ^ & @ \\ \hline
-		x      & @ & \hat{} & v      & \hat{} & v & \hat{} & v      & \hat{} & v      & ^     \\ \hline
-		x      & @ & @      & @      & @      & v & ^      & v      & v      & <      & > & v \\ \hline
-		\hat{} & x & @      & >      & @      & > & >      & v      & ^      & @      & @     \\ \hline
-		O      & x & @      & >      & @      & @ & >      & v      & \hat{} & ^      & ^     \\ \hline
-	\end{tabular}
-	\caption{Terceira tabela}
-\end{table}
+	\end{array}
+\]
+
+\small \textbf{STOCHASTIC}
+\[
+	\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|}
+		\hline
+	\end{array}
+\]
+
 
 \section{Conclusão}
 
