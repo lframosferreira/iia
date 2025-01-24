@@ -4,6 +4,8 @@
 
 \usepackage{amsmath}
 \usepackage{float}
+\usepackage{algorithm}
+\usepackage{algorithmic}
 \usepackage{graphicx}
 
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
@@ -30,16 +32,53 @@ arquivo \texttt{README.md} disponibilizado.
 
 \section{Q-learning}
 
-bla
+O algoritmo de \texttt{Q-Learning} é um algoritmo de aprendizado por reforço, em que o agente, ao explorar o ambiente e interagir com o que ele possui,
+passa a aprender mais sobre como alcançar seus objetivos. Para cada possível estado \(s\), ele seleciona a melhor ação \(a\) para se tomar, obtendo assim
+o estado \(s'\) que será alcançado ao aplicar \(a\) em \(s\), assim como uma recompensa \(r\) por aplicar essa ação. Por fim, ele atualiza o valor de \(Q(s, a)\),
+que é mantido para todo par de estado e ação e indica quão bom é executar aquela ação partindo daquele estado.
+
+O pseudocódigo abaixo, inspirado nos slides da disciplina, indica, em alto nível, como funciona o algoritmo.
 
 \begin{itemize}
-	\item standard
-	\item positive
-	\item stochastic
+	\item Inicializa \(Q(s, a)\) para todos os estados e ações
+	\item \(s \gets\) estado inicial
+	\item \(n \gets\) número de episódios
+	\item \(\epsilon \gets\) limiar \(\epsilon-greedy\)
+	\item \(\gamma \gets\) taxa de desconte
+	\item \(\alpha \gets\) taxa de aprendizado
+	\item Para todo \(i = 0\) até \(n\)
+	      \begin{itemize}
+		      \item se \(random() < \epsilon: a \gets random\_action()\)
+		      \item senão \(a \gets argmax_a(Q(s, a))\)
+		      \item Executa ação \(a\), observa recompensa \(r\) e próximo estado \(s'\)
+		      \item \(Q(s, a) \gets Q(s, a) + \alpha * [r + \gamma* max_{a' \in A}Q(s', a') - Q(s, a)]\)
+		      \item \(s \gets s'\)
+	      \end{itemize}
+\end{itemize}
+
+Uma característica do \texttt{Q-Learning} é que ele é um algoritmo chamado de \textit{model free}, que em alto nível significa dizer que em nenhum momento o agente
+precisa aprender ou estimar a função de transição que ele utiliza. Ele também é um algoritmo \textit{off-policy}, ou seja, a política utilizada pelo agente
+na exploração pode ser diferente da política que ele está aprendendo (\textit{target policy}).
+
+O algoritmo possui algumas pequenas variações, as quais exploramos no trabalho, e estão descritas a seguir.
+
+\begin{itemize}
+	\item \textbf{STANDARD}: nesta versão, utilizamos o algortimo normalmente, com a tabela de recompensas descrita na especificação.
+	\item \textbf{POSITIVE}: também utilizamos a tabela descrita na especificação do trabalho. Nesa versão, toda recompensa é positiva.
+	\item \textbf{STOCHASTIC}: nesta versão, após escolher uma ação, o algortimo tem 20\% de chance de na verdade executar outra ação perpendicular à ação escolhida,
+	      conforme descrito na especificação.
 \end{itemize}
 
 \section{Estruturas e modelagem}
 
+A linguagem \textit{Python} facilitou muito o trabalho. Para modelar as 4 ações possíveis, utilizamos números inteiros. EM particular, para ficar mais organizado,
+utilizamos a estrutura \textit{IntEnum}. O mapa é um \textit{array} da biblioteca \textit{numpy}, que armazena caracteres. A matriz de pesos é uma matriz tridimensional,
+também \textit{numpy}, que armazena floats. Ela possui as dimensões do mapa de entrada, mas cada posição é composta por um vetor de 4 posições, uma para cada possível ação.
+
+As variações \textbf{STANDARD} e \textbf{POSITIVE} foram implementadas na mesma função, chamada de \textit{qlearning}, pois elas são idênticas a menos do valor das recompensas, que é mudado dinamicamente conforme
+os parâmetros de linha de comando. A variação \textbf{STOCHASTIC} é implementada numa função diferente, chamada \textit{stochastic}, para facilitar a organização.
+
+As implementações seguem exatamente as especificações do algoritmo apresentadas na disciplina.
 
 \section{Análise das diferentes políticas}
 

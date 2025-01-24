@@ -1,7 +1,7 @@
-from random import random, randint
+from random import random, randint, choice
 import sys
 import numpy as np
-from enum import Enum
+from enum import IntEnum
 
 Grass = "."
 HighGrass = ";"
@@ -19,7 +19,7 @@ LEARNING_RATE = 0.1
 DISCOUNT_RATE = 0.9
 
 
-class Actions(Enum):
+class Actions(IntEnum):
     Left = 0
     Right = 1
     Down = 2
@@ -42,7 +42,7 @@ def get_ground_type_reward(gt, modifier):
             return -10.0
         elif gt == Objective:
             return 10.0
-        else:
+        else:  # Wall
             return -1e9
     elif modifier == "positive":
         if gt == Grass:
@@ -55,7 +55,7 @@ def get_ground_type_reward(gt, modifier):
             return 0.0
         elif gt == Objective:
             return 10.0
-        else:
+        else:  # Wall
             return -1e9
 
 
@@ -65,45 +65,77 @@ def parse_input(path):
         WIDTH, HEIGHT = list(map(int, f.readline().split(" ")))
         mapa = np.full((HEIGHT, WIDTH), "L", dtype="<U1")
         for i, line in enumerate(f.readlines()):
-            line = line[:-1]
+            if line[-1] == "\n":
+                line = line[:-1]
             for j, c in enumerate(line):
                 mapa[i][j] = c
     return mapa
 
 
 def qlearning(mapa, pesos):
-    cx = xi
-    cy = yi
     h, w = mapa.shape
-    for _ in range(n):
-        action = None
-        if random() < EPSILON:
-            action = randint(0, 3)
-        else:
-            action = np.argmax(pesos[cx, cy])
-        dx, dy = actions_moves[action]
-        nx = cx
-        ny = cy
-        reward = -1e9
-        if cx + dx < 0 or cx + dx >= h or cy + dy < 0 or cy + dy >= w:
-            pass
-        elif mapa[cx + dx][cy + dy] == Wall:
-            pass
-        else:
-            nx += dx
-            ny += dy
-            reward = get_ground_type_reward(mapa[nx][ny], sys.argv[2])
-        pesos[cx, cy, action] += LEARNING_RATE * (
-            reward + DISCOUNT_RATE * np.max(pesos[nx, ny]) - pesos[cx, cy, action]
-        )
-
-
-def positive(mapa, pesos):
-    pass
+    for idx in range(n):
+        cx = xi
+        cy = yi
+        while mapa[cx][cy] not in [Fire, Objective]:
+            # print(idx)
+            action = None
+            if random() <= EPSILON:
+                action = randint(0, 3)
+            else:
+                action = np.argmax(pesos[cx, cy])
+            dx, dy = actions_moves[action]
+            nx = cx
+            ny = cy
+            reward = -1e9
+            if cx + dx < 0 or cx + dx >= h or cy + dy < 0 or cy + dy >= w:
+                pass
+            elif mapa[cx + dx][cy + dy] == Wall:
+                pass
+            else:
+                nx += dx
+                ny += dy
+                reward = get_ground_type_reward(mapa[nx][ny], sys.argv[2])
+            pesos[cx, cy, action] += LEARNING_RATE * (
+                reward + DISCOUNT_RATE * np.max(pesos[nx, ny]) - pesos[cx, cy, action]
+            )
+            cx = nx
+            cy = ny
 
 
 def stochastic(mapa, pesos):
-    pass
+    h, w = mapa.shape
+    for _ in range(n):
+        cx = xi
+        cy = yi
+        while mapa[cx][cy] not in [Fire, Objective]:
+            # print(idx)
+            original_action = np.argmax(pesos[cx, cy])
+            action = original_action.copy()
+            if random() <= 0.2:
+                if action in [Actions.Up, Actions.Down]:
+                    action = int(choice([Actions.Left, Actions.Right]))
+                else:
+                    action = int(choice([Actions.Up, Actions.Down]))
+            dx, dy = actions_moves[action]
+            nx = cx
+            ny = cy
+            reward = -1e9
+            if cx + dx < 0 or cx + dx >= h or cy + dy < 0 or cy + dy >= w:
+                pass
+            elif mapa[cx + dx][cy + dy] == Wall:
+                pass
+            else:
+                nx += dx
+                ny += dy
+                reward = get_ground_type_reward(mapa[nx][ny], "standard")
+            pesos[cx, cy, original_action] += LEARNING_RATE * (
+                reward
+                + DISCOUNT_RATE * np.max(pesos[nx, ny])
+                - pesos[cx, cy, original_action]
+            )
+            cx = nx
+            cy = ny
 
 
 def main() -> None:
