@@ -8,3 +8,7 @@
 
 É necessário ter *numpy* instalado no seu sistema para rodar o programa. Utilize o arquivo `requirements.txt` para criar um ambiente virtual
 com tudo que você precisa.
+
+# Relatório
+
+O relatório do trabalho, em PDF, está disponível no diretório `report`, no arquivo `report.pdf`
