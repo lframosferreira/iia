@@ -254,14 +254,14 @@ O mapa \textit{choices} está exposto abaixo.
 	\[
 		\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|}
 			\hline
-			@ & > & > & > & > & \cellcolor{red!20}> & > & v & < & < & @ \\ \hline
-			@ & ^ & @ & ^ & x & @ & x & v & @ & ^ & @ \\ \hline
-			@ & ^ & @ & v & @ & @ & x & v & @ & ^ & @ \\ \hline
-			@ & ^ & @ & v & x & @ & x & v & @ & ^ & @ \\ \hline
-			@ & > & > & ^ & @ & @ & x & v & < & < & @ \\ \hline
-			@ & < & @ & v & x & @ & x & v & @ & ^ & @ \\ \hline
-			@ & > & @ & ^ & @ & @ & x & v & @ & ^ & @ \\ \hline
-			@ & v & > & ^ & < & \cellcolor{red!20}O & < & < & < & < & @ \\ \hline
+			@ & >      & > & >      & > & \cellcolor{green!20}> & > & v & < & <      & @ \\ \hline
+			@ & \hat{} & @ & \hat{} & x & @                     & x & v & @ & \hat{} & @ \\ \hline
+			@ & \hat{} & @ & v      & @ & @                     & x & v & @ & \hat{} & @ \\ \hline
+			@ & \hat{} & @ & v      & x & @                     & x & v & @ & \hat{} & @ \\ \hline
+			@ & >      & > & \hat{} & @ & @                     & x & v & < & <      & @ \\ \hline
+			@ & <      & @ & v      & x & @                     & x & v & @ & \hat{} & @ \\ \hline
+			@ & >      & @ & \hat{} & @ & @                     & x & v & @ & \hat{} & @ \\ \hline
+			@ & v      & > & \hat{} & < & \cellcolor{red!20}O   & < & < & < & <      & @ \\ \hline
 		\end{array}
 	\]
 \end{center}
@@ -271,6 +271,14 @@ O mapa \textit{choices} está exposto abaixo.
 \[
 	\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|}
 		\hline
+		@ & v      & > & v & < & \cellcolor{green!20}< & < & <      & < & <      & @ \\ \hline
+		@ & v      & @ & v & x & @                     & x & v      & @ & >      & @ \\ \hline
+		@ & v      & @ & v & @ & @                     & x & \hat{} & @ & v      & @ \\ \hline
+		@ & v      & @ & v & x & @                     & x & <      & @ & >      & @ \\ \hline
+		@ & >      & > & < & @ & @                     & x & <      & < & v      & @ \\ \hline
+		@ & \hat{} & @ & v & x & @                     & x & <      & @ & \hat{} & @ \\ \hline
+		@ & v      & @ & v & @ & @                     & x & v      & @ & >      & @ \\ \hline
+		@ & >      & > & > & > & \cellcolor{red!20}O   & < & \hat{} & < & >      & @ \\ \hline
 	\end{array}
 \]
 
@@ -278,12 +286,27 @@ O mapa \textit{choices} está exposto abaixo.
 \[
 	\begin{array}{|c|c|c|c|c|c|c|c|c|c|c|c|}
 		\hline
+		@ & >      & > & v      & v & \cellcolor{green!20}> & v & v      & < & < & @ \\ \hline
+		@ & \hat{} & @ & >      & x & @                     & x & <      & @ & v & @ \\ \hline
+		@ & v      & @ & v      & @ & @                     & x & <      & @ & v & @ \\ \hline
+		@ & <      & @ & >      & x & @                     & x & <      & @ & v & @ \\ \hline
+		@ & >      & > & \hat{} & @ & @                     & x & \hat{} & > & < & @ \\ \hline
+		@ & \hat{} & @ & >      & x & @                     & x & \hat{} & @ & v & @ \\ \hline
+		@ & \hat{} & @ & \hat{} & @ & @                     & x & <      & @ & v & @ \\ \hline
+		@ & >      & > & \hat{} & < & \cellcolor{red!20}O   & > & \hat{} & > & < & @ \\ \hline
 	\end{array}
 \]
+
+Algumas análises interessantes podem ser feitas nesse mapa. Mais uma vez, a variação \textbf{STANDARD} foi superior às outras e obteve uma política satisfatória. A variação \textbf{POSITIVE}, apesar de mais uma vez muito lenta,
+também achou uma política satisfatória. O curioso nesse caso é que o caminho mais "indicado" pela política é o que desce para o objetivo pela esquerda, ao contrátio da variação anterior, que indicava que o melhor caminho era descer pela direita.
+A variação \textbf{STOCHASTIC}, no entanto, teve um desempenho extremamente ruim nesse mapa. A política encontrada não apresenta qualquer tipo de sentido e não aponta boas escolhas para se chegar ao objetivo. Meu palpite inicial era de que talvez o número de iterações fosse muito baixo para que
+o algoritmo desempenha-se bem, mas mesmo aumentando o número de episódio a performance não melhorou.
 
 
 \section{Conclusão}
 
-the last dance
+O trabalho foi uma excelente maneira de aprender mais e colocar em prática os conhecimentos adquiridos sobre aprendizado por reforço, em particular em relação ao algoritmo \textit{Q-Learning}. O algoritmo possui uma implementação simples e a linguagem \textit{Python} ajudou muito também,
+por ser de fácil uso. Em relação às variações propostas, a \textbf{STANDARD} aparentou ser a melhor de todas, como esperado. A variação \textbf{STOCHASTIC} teve um desempenho bom nos primeiros testes, mas no último mapa os resultados não foram satisfatórios. Um estudo mais profundo sobre o caso desse mapa em específico
+e como ocorreu o aprendizado do agente é necessário para compreender o que está acontecendo. A variação \textbf{POSITIVE}, por sua vez, até conseguia encontrar políticas interessantes para o agente, mas seu tempo de execução era extremamente lento, o que classificou essa variação negativamente.
 
 \end{document}
